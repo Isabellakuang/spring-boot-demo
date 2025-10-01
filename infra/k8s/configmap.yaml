@@ -1,0 +1,24 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: app-config
+  namespace: spring-boot-demo
+data:
+  # 应用配置
+  SPRING_PROFILES_ACTIVE: "prod"
+  LOG_LEVEL: "INFO"
+  
+  # 数据库配置
+  SPRING_DATASOURCE_URL: "jdbc:postgresql://postgres-service:5432/demo_db"
+  
+  # Redis 配置
+  SPRING_REDIS_HOST: "redis-service"
+  SPRING_REDIS_PORT: "6379"
+  
+  # 服务 URL
+  ML_SERVICE_URL: "http://ml-service:8001"
+  AIRFLOW_URL: "http://airflow-webserver:8080"
+  
+  # 向量数据库
+  VECTOR_DB_PROVIDER: "weaviate"
+  WEAVIATE_URL: "http://weaviate-service:8080"
