@@ -1,4 +1,9 @@
 # 本地开发用的简化 Kubernetes 配置
+# 性能调优说明：
+# - 本地环境使用较低的资源配置以节省资源
+# - 生产环境配置请参考 deployment.yaml
+# - 包含完整的健康探针配置
+
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -33,14 +38,16 @@ spec:
         - name: SPRING_DATA_REDIS_HOST
           value: "redis"
         - name: JAVA_OPTS
-          value: "-Xms256m -Xmx512m"  # 降低内存使用
+          value: "-Xms256m -Xmx512m"  # 本地环境降低内存使用
+        # 性能调优：本地开发环境资源配置
+        # 根据本地机器性能可适当调整
         resources:
           requests:
-            memory: "256Mi"
-            cpu: "250m"
+            memory: "256Mi"  # 最小保证内存
+            cpu: "250m"      # 最小保证 CPU
           limits:
-            memory: "512Mi"
-            cpu: "500m"
+            memory: "512Mi"  # 最大允许内存
+            cpu: "500m"      # 最大允许 CPU
         livenessProbe:
           httpGet:
             path: /actuator/health/liveness
@@ -135,3 +142,51 @@ spec:
   - port: 6379
   selector:
     app: redis
+---
+# Frontend
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: frontend
+  labels:
+    app: frontend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: frontend
+  template:
+    metadata:
+      labels:
+        app: frontend
+    spec:
+      containers:
+      - name: frontend
+        image: spring-boot-demo-frontend:latest
+        imagePullPolicy: Never  # 使用本地镜像
+        ports:
+        - containerPort: 80
+        env:
+        - name: VITE_API_BASE_URL
+          value: "http://localhost:30080/api"
+        # 性能调优：前端资源配置（Nginx）
+        resources:
+          requests:
+            memory: "64Mi"   # Nginx 内存占用较小
+            cpu: "100m"
+          limits:
+            memory: "128Mi"
+            cpu: "200m"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: frontend-service
+spec:
+  type: NodePort
+  ports:
+  - port: 80
+    targetPort: 80
+    nodePort: 30000  # 前端访问端口
+  selector:
+    app: frontend

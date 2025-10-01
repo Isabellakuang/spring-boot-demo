@@ -26,4 +26,25 @@ public class CreateConversationRequest {
     public String getInitialMessage() {
         return initialMessage;
     }
+
+    public void setSubject(String subject) {
+        this.subject = subject;
+    }
+
+    public void setCustomerEmail(String customerEmail) {
+        this.customerEmail = customerEmail;
+    }
+
+    public void setInitialMessage(String initialMessage) {
+        this.initialMessage = initialMessage;
+    }
+
+    public CreateConversationRequest() {
+    }
+
+    public CreateConversationRequest(String subject, String customerEmail, String initialMessage) {
+        this.subject = subject;
+        this.customerEmail = customerEmail;
+        this.initialMessage = initialMessage;
+    }
 }

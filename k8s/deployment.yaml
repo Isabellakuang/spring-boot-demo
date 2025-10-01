@@ -1,3 +1,10 @@
+# 生产环境 Kubernetes 部署配置
+# 包含性能调优建议：
+# - 资源请求和限制优化
+# - 自动扩缩容（HPA）配置
+# - 健康探针配置
+# - 优化的 JVM 参数
+
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -68,6 +75,9 @@ spec:
           periodSeconds: 5
           timeoutSeconds: 3
           failureThreshold: 3
+        # 性能调优：根据实际负载调整资源请求和限制
+        # requests: 保证的最小资源
+        # limits: 允许的最大资源
         resources:
           requests:
             memory: "512Mi"
@@ -143,6 +153,11 @@ stringData:
   database-username: "spring-boot"
   database-password: "change-me-in-production"
 ---
+# 性能调优：自动扩缩容（HPA）配置
+# - 基于 CPU 和内存使用率自动调整副本数
+# - CPU 目标：70% 平均利用率
+# - 内存目标：80% 平均利用率
+# - 副本范围：3-10
 apiVersion: autoscaling/v2
 kind: HorizontalPodAutoscaler
 metadata:
@@ -160,27 +175,28 @@ spec:
       name: cpu
       target:
         type: Utilization
-        averageUtilization: 70
+        averageUtilization: 70  # CPU 达到 70% 时触发扩容
   - type: Resource
     resource:
       name: memory
       target:
         type: Utilization
-        averageUtilization: 80
+        averageUtilization: 80  # 内存达到 80% 时触发扩容
+  # 扩缩容行为策略
   behavior:
     scaleDown:
-      stabilizationWindowSeconds: 300
+      stabilizationWindowSeconds: 300  # 缩容前等待 5 分钟稳定
       policies:
       - type: Percent
-        value: 50
+        value: 50  # 每次最多缩容 50%
         periodSeconds: 60
     scaleUp:
-      stabilizationWindowSeconds: 0
+      stabilizationWindowSeconds: 0  # 立即扩容
       policies:
       - type: Percent
-        value: 100
+        value: 100  # 每次最多扩容 100%
         periodSeconds: 30
       - type: Pods
-        value: 2
+        value: 2  # 或每次增加 2 个 Pod
         periodSeconds: 30
-      selectPolicy: Max
+      selectPolicy: Max  # 选择扩容幅度最大的策略

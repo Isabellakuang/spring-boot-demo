@@ -17,4 +17,20 @@ public class MessageRequest {
     public String getContent() {
         return content;
     }
+
+    public void setSender(String sender) {
+        this.sender = sender;
+    }
+
+    public void setContent(String content) {
+        this.content = content;
+    }
+
+    public MessageRequest() {
+    }
+
+    public MessageRequest(String sender, String content) {
+        this.sender = sender;
+        this.content = content;
+    }
 }
