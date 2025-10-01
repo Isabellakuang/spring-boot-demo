@@ -1,62 +1,97 @@
-# Spring Boot Demo - Full-Stack Enterprise Application
+# Spring Boot Demo - AI-Powered Enterprise Platform
 
 [![Java](https://img.shields.io/badge/Java-21-orange.svg)](https://www.oracle.com/java/)
 [![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.3.4-brightgreen.svg)](https://spring.io/projects/spring-boot)
 [![React](https://img.shields.io/badge/React-18.2-blue.svg)](https://reactjs.org/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.3-blue.svg)](https://www.typescriptlang.org/)
+[![Python](https://img.shields.io/badge/Python-3.11-blue.svg)](https://www.python.org/)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
 ## 📋 项目概述
 
-基于企业级标准构建的全栈 Spring Boot + React 演示应用，展示了现代化微服务架构、云原生部署和最佳实践。
+基于企业级标准构建的**AI驱动全栈平台**，集成了现代化微服务架构、大语言模型（LLM）、检索增强生成（RAG）、数据管道和云原生部署能力。
 
-### 核心功能
+### 🎯 核心功能
 
-- **对话管理系统**: 客户对话的创建、检索和消息追加
-- **智能知识库**: 基于文本相似度的 FAQ 智能匹配
-- **React 前端**: 现代化的用户界面，支持实时交互
-- **企业级缓存**: Redis 分布式缓存提升性能
-- **异步处理**: 高效的异步任务执行框架
-- **健康检查**: 完善的健康监控和就绪探针
-- **API 文档**: OpenAPI 3.0 标准化文档
+#### 业务功能
+- **智能对话系统**: 基于 LLM 的客户对话管理和智能回复
+- **知识库管理**: FAQ 智能匹配和语义搜索
+- **RAG 引擎**: 检索增强生成，提供上下文感知的 AI 回答
+- **用户认证**: JWT 令牌认证和授权机制
+
+#### AI/ML 能力
+- **多 LLM 支持**: OpenAI、Anthropic 等多模型集成
+- **向量数据库**: Weaviate、ChromaDB、Pinecone 支持
+- **语义搜索**: 基于向量相似度的智能检索
+- **模型回退**: 自动故障转移和负载均衡
+
+#### 数据工程
+- **ETL 管道**: Apache Airflow 编排的数据处理流程
+- **数据质量**: Great Expectations 数据验证框架
+- **批处理**: Spring Batch 大规模数据处理
+- **实时处理**: 异步任务和事件驱动架构
+
+#### 企业级特性
+- **分布式缓存**: Redis 多层缓存策略
+- **健康监控**: Actuator + Prometheus + Grafana
+- **分布式追踪**: Zipkin 链路追踪
+- **熔断限流**: Resilience4j 容错机制
+- **API 文档**: OpenAPI 3.0 自动生成
 
 ---
 
 ## 🛠️ 技术栈
 
-### 后端核心
+### 后端核心 (Java/Spring Boot)
 - **Java 21** - 最新 LTS 版本
 - **Spring Boot 3.3.4** - 企业级框架
 - **Spring Data JPA** - 数据持久化
+- **Spring Security + OAuth2** - 安全认证
+- **Spring Batch** - 批处理框架
 - **PostgreSQL 15** - 关系型数据库
 - **Redis 7** - 分布式缓存
+
+### AI/ML 服务 (Python)
+- **FastAPI** - 高性能 API 框架
+- **LangChain** - LLM 应用开发框架
+- **OpenAI API** - GPT 模型集成
+- **Anthropic API** - Claude 模型集成
+- **Transformers** - Hugging Face 模型库
+- **TensorFlow & PyTorch** - 深度学习框架
+- **scikit-learn** - 机器学习工具
+
+### 向量数据库
+- **Weaviate** - 云原生向量数据库
+- **ChromaDB** - 轻量级嵌入式向量数据库
+- **Pinecone** - 托管向量数据库服务
+
+### 数据工程
+- **Apache Airflow 2.8** - 工作流编排
+- **Great Expectations** - 数据质量验证
+- **Pandas & NumPy** - 数据处理
 
 ### 前端核心
 - **React 18.2** - 现代化 UI 框架
 - **TypeScript 5.3** - 类型安全
 - **Vite** - 快速构建工具
 - **TailwindCSS** - 实用优先的 CSS 框架
-- **React Query** - 数据获取和缓存
+- **React Query (TanStack Query)** - 数据获取和缓存
 - **React Router** - 客户端路由
+- **Zustand** - 轻量级状态管理
 - **Axios** - HTTP 客户端
 
 ### 监控与可观测性
 - **Micrometer + Prometheus** - 指标收集
+- **Grafana** - 可视化仪表板
 - **Zipkin** - 分布式追踪
 - **Spring Boot Actuator** - 健康检查
 - **Logstash Encoder** - 结构化日志
 
-### 企业级特性
-- **OpenAPI 3.0** - API 文档自动生成
-- **Resilience4j** - 熔断与限流
-- **Spring Retry** - 重试机制
-- **Testcontainers** - 集成测试
-
 ### DevOps & 云原生
 - **Docker & Docker Compose** - 容器化
-- **Kubernetes** - 容器编排与自动扩缩容
+- **Kubernetes** - 容器编排
+- **Nginx** - 反向代理和负载均衡
 - **GitHub Actions** - CI/CD 管道
-- **Nginx** - 前端反向代理
 
 ---
 
@@ -66,29 +101,44 @@
 
 - **Java 21+** (必需)
 - **Node.js 18+** (必需)
-- **Maven 3.8+** (可使用项目自带的 Maven Wrapper)
+- **Python 3.11+** (可选，用于 ML 服务)
 - **Docker Desktop** (推荐)
-- PostgreSQL 15 (可选，可使用 Docker)
-- Redis 7 (可选，可使用 Docker)
+- **Maven 3.8+** (可使用项目自带的 Maven Wrapper)
 
-### 方式 1：使用 Docker Compose（推荐 - 全栈部署）
+### 方式 1：使用 Docker Compose（推荐 - 完整部署）
 
-#### 1. 启动所有服务（后端 + 前端）
+#### 1. 配置环境变量
+
 ```bash
-# 启动 PostgreSQL、Redis、后端应用和前端
+# 复制环境变量模板
+cp .env.example .env
+
+# 编辑 .env 文件，添加必要的 API 密钥
+# OPENAI_API_KEY=your-openai-api-key
+# ANTHROPIC_API_KEY=your-anthropic-api-key
+# PINECONE_API_KEY=your-pinecone-api-key (可选)
+```
+
+#### 2. 启动所有服务
+
+```bash
+# 进入基础设施目录
+cd infra
+
+# 启动所有服务（包括 AI/ML 服务）
 docker-compose up -d
 
 # 查看所有服务状态
 docker-compose ps
 
-# 查看应用日志
-docker-compose logs -f app
-
-# 查看前端日志
+# 查看服务日志
+docker-compose logs -f backend
+docker-compose logs -f ml-service
 docker-compose logs -f frontend
 ```
 
-#### 2. 访问应用
+#### 3. 访问应用
+
 ```bash
 # 前端应用
 http://localhost:3000
@@ -99,13 +149,33 @@ http://localhost:8080/api
 # API 文档
 http://localhost:8080/swagger-ui.html
 
+# ML 服务 API
+http://localhost:8001/docs
+
+# Airflow Web UI
+http://localhost:8082
+用户名: admin
+密码: admin
+
+# Prometheus 监控
+http://localhost:9090
+
+# Grafana 仪表板
+http://localhost:3001
+用户名: admin
+密码: admin
+
 # 健康检查
 http://localhost:8080/actuator/health
 ```
 
-**提示**: 应用启动可能需要 30-60 秒，请耐心等待。
+**提示**: 
+- 首次启动可能需要 2-3 分钟，请耐心等待所有服务就绪
+- ML 服务需要下载模型，首次启动可能较慢
+- 确保已配置 API 密钥才能使用 LLM 功能
 
-#### 3. Docker 常用命令
+#### 4. Docker 常用命令
+
 ```bash
 # 停止所有服务
 docker-compose down
@@ -114,7 +184,8 @@ docker-compose down
 docker-compose down -v
 
 # 重启特定服务
-docker-compose restart app
+docker-compose restart backend
+docker-compose restart ml-service
 docker-compose restart frontend
 
 # 查看服务资源使用情况
@@ -123,27 +194,41 @@ docker-compose stats
 # 重新构建并启动（代码更改后）
 docker-compose up -d --build
 
-# 仅重新构建前端
-docker-compose up -d --build frontend
+# 仅启动核心服务（不包括 Airflow 和监控）
+docker-compose up -d postgres redis backend ml-service frontend
 
-# 仅重新构建后端
-docker-compose up -d --build app
+# 查看特定服务日志
+docker-compose logs -f airflow-webserver
+docker-compose logs -f prometheus
 ```
 
 ### 方式 2：本地开发（前后端分离）
 
-#### 1. 启动后端依赖服务
+#### 1. 启动依赖服务
+
 ```bash
-# 仅启动 PostgreSQL 和 Redis
+cd infra
+
+# 启动数据库和缓存
 docker-compose up -d postgres redis
 
-# 等待服务就绪（约 10 秒）
-docker-compose ps
+# 可选：启动向量数据库（用于 RAG 功能）
+docker-compose up -d chromadb
+
+# 可选：启动 ML 服务
+docker-compose up -d ml-service
 ```
 
 #### 2. 启动后端应用
+
 ```bash
-# 构建并运行后端
+# 返回项目根目录
+cd ..
+
+# 进入后端目录
+cd backend
+
+# 构建并运行
 mvn clean package -DskipTests
 mvn spring-boot:run
 
@@ -151,6 +236,7 @@ mvn spring-boot:run
 ```
 
 #### 3. 启动前端开发服务器
+
 ```bash
 # 进入前端目录
 cd frontend
@@ -162,39 +248,32 @@ npm install
 npm run dev
 
 # 前端将在 http://localhost:3000 运行
-# 自动代理 API 请求到 http://localhost:8080
 ```
 
-#### 4. 前端开发命令
+#### 4. 启动 Python ML 服务（可选）
+
 ```bash
-# 运行 linter
-npm run lint
+# 进入 ML 服务目录
+cd python-services/ml-service
 
-# 运行测试
-npm test
+# 创建虚拟环境
+python -m venv venv
+source venv/bin/activate  # Windows: venv\Scripts\activate
 
-# 运行测试（UI 模式）
-npm run test:ui
+# 安装依赖
+pip install -r requirements.txt
 
-# 生成测试覆盖率报告
-npm run test:coverage
-
-# 构建生产版本
-npm run build
-
-# 预览生产构建
-npm run preview
+# 启动服务
+uvicorn app:app --reload --port 8001
 ```
 
 ### 方式 3：仅后端开发
 
-如果只需要开发后端 API：
-
 ```bash
-# 启动依赖服务
+cd infra
 docker-compose up -d postgres redis
 
-# 运行后端
+cd ../backend
 mvn spring-boot:run
 
 # 访问 API 文档
@@ -208,99 +287,173 @@ http://localhost:8080/swagger-ui.html
 ### 整体架构
 
 ```
-┌─────────────────────────────────────────────────────────┐
-│                    Frontend (React)                      │
-│  - React 18 + TypeScript                                │
-│  - TailwindCSS + Vite                                   │
-│  - React Query + React Router                           │
-│  - Nginx (生产环境)                                      │
-├─────────────────────────────────────────────────────────┤
-│                    API Gateway                           │
-│  - CORS 配置                                             │
-│  - 请求/响应拦截                                         │
-├─────────────────────────────────────────────────────────┤
-│                Backend (Spring Boot)                     │
-│  ┌───────────────────────────────────────────────────┐  │
-│  │      Controller Layer                             │  │
-│  │  - ConversationController                         │  │
-│  │  - KnowledgeController                            │  │
-│  ├───────────────────────────────────────────────────┤  │
-│  │      Service Layer                                │  │
-│  │  - ConversationService                            │  │
-│  │  - FaqService                                     │  │
-│  ├───────────────────────────────────────────────────┤  │
-│  │      Repository Layer                             │  │
-│  │  - JPA Repositories                               │  │
-│  └───────────────────────────────────────────────────┘  │
-├─────────────────────────────────────────────────────────┤
-│                    Data Layer                            │
-│  - PostgreSQL (主数据库)                                │
-│  - Redis (缓存层)                                        │
-└─────────────────────────────────────────────────────────┘
+┌─────────────────────────────────────────────────────────────┐
+│                    Frontend (React + TypeScript)             │
+│  - React 18 + Vite + TailwindCSS                            │
+│  - React Query + Zustand                                    │
+│  - Nginx (生产环境)                                          │
+├─────────────────────────────────────────────────────────────┤
+│                    API Gateway Layer                         │
+│  - CORS 配置                                                 │
+│  - JWT 认证                                                  │
+│  - 请求/响应拦截                                             │
+├─────────────────────────────────────────────────────────────┤
+│                Backend Services (Spring Boot)                │
+│  ┌───────────────────────────────────────────────────────┐  │
+│  │  REST API Controllers                                 │  │
+│  │  - ConversationController (对话管理)                  │  │
+│  │  - KnowledgeController (知识库)                       │  │
+│  │  - LlmController (LLM 集成)                           │  │
+│  │  - RagController (RAG 引擎)                           │  │
+│  │  - DataPipelineController (数据管道)                  │  │
+│  │  - AuthController (认证授权)                          │  │
+│  ├───────────────────────────────────────────────────────┤  │
+│  │  Service Layer                                        │  │
+│  │  - 业务逻辑处理                                        │  │
+│  │  - LLM 服务集成                                        │  │
+│  │  - 缓存策略                                            │  │
+│  ├───────────────────────────────────────────────────────┤  │
+│  │  Repository Layer                                     │  │
+│  │  - JPA Repositories                                   │  │
+│  │  - 数据访问抽象                                        │  │
+│  └───────────────────────────────────────────────────────┘  │
+├─────────────────────────────────────────────────────────────┤
+│                Python ML Services (FastAPI)                  │
+│  ┌───────────────────────────────────────────────────────┐  │
+│  │  ML Service (Port 8001)                               │  │
+│  │  - LLM 集成 (OpenAI, Anthropic)                       │  │
+│  │  - RAG 引擎 (LangChain)                               │  │
+│  │  - 向量存储管理                                        │  │
+│  │  - 模型推理                                            │  │
+│  ├───────────────────────────────────────────────────────┤  │
+│  │  Data Processing Service (Port 8002)                  │  │
+│  │  - ETL 处理                                            │  │
+│  │  - 数据转换                                            │  │
+│  └───────────────────────────────────────────────────────┘  │
+├─────────────────────────────────────────────────────────────┤
+│                Data Orchestration (Airflow)                  │
+│  - ETL Pipeline DAG                                         │
+│  - Data Quality DAG                                         │
+│  - Data Ingestion DAG                                       │
+├─────────────────────────────────────────────────────────────┤
+│                    Data Layer                                │
+│  ┌──────────────┬──────────────┬──────────────────────────┐ │
+│  │ PostgreSQL   │ Redis        │ Vector Databases         │ │
+│  │ (主数据库)   │ (缓存层)     │ (Weaviate/ChromaDB)      │ │
+│  └──────────────┴──────────────┴──────────────────────────┘ │
+├─────────────────────────────────────────────────────────────┤
+│                Monitoring & Observability                    │
+│  - Prometheus (指标收集)                                     │
+│  - Grafana (可视化)                                          │
+│  - Zipkin (分布式追踪)                                       │
+└─────────────────────────────────────────────────────────────┘
 ```
 
-### 前端架构
+### 目录结构
 
 ```
-frontend/
-├── src/
-│   ├── api/              # API 客户端
-│   │   ├── client.ts     # Axios 配置
-│   │   ├── conversations.ts
-│   │   └── faqs.ts
-│   ├── components/       # 可复用组件
-│   │   └── Layout.tsx
-│   ├── pages/            # 页面组件
-│   │   ├── HomePage.tsx
-│   │   ├── ConversationsPage.tsx
-│   │   ├── ConversationDetailPage.tsx
-│   │   └── FaqPage.tsx
-│   ├── types/            # TypeScript 类型定义
-│   │   └── index.ts
-│   ├── App.tsx           # 根组件
-│   ├── main.tsx          # 入口文件
-│   └── index.css         # 全局样式
-├── public/               # 静态资源
-├── Dockerfile            # Docker 构建文件
-├── nginx.conf            # Nginx 配置
-├── package.json
-├── tsconfig.json
-├── vite.config.ts
-└── tailwind.config.js
-```
-
-### 后端架构
-
-```
-src/main/java/com/java/demo/
-├── config/               # 配置类
-│   ├── AsyncConfig.java
-│   ├── CacheConfig.java
-│   ├── WebConfig.java    # CORS 配置
-│   └── OpenApiConfig.java
-├── controller/           # REST 控制器
-│   ├── ConversationController.java
-│   └── KnowledgeController.java
-├── service/              # 业务逻辑
-│   ├── ConversationService.java
-│   ├── FaqService.java
-│   └── TextSimilarity.java
-├── repository/           # 数据访问
-│   ├── ConversationRepository.java
-│   └── FaqRepository.java
-├── model/                # 实体类
-│   ├── Conversation.java
-│   ├── ConversationMessage.java
-│   └── FaqEntry.java
-├── dto/                  # 数据传输对象
-│   ├── CreateConversationRequest.java
-│   ├── MessageRequest.java
-│   └── ConversationView.java
-├── exception/            # 异常处理
-│   ├── GlobalExceptionHandler.java
-│   └── ResourceNotFoundException.java
-└── health/               # 健康检查
-    └── CustomHealthIndicator.java
+spring-boot-demo/
+├── backend/                      # Spring Boot 后端
+│   ├── src/main/java/com/java/demo/
+│   │   ├── config/              # 配置类
+│   │   │   ├── AsyncConfig.java
+│   │   │   ├── CacheConfig.java
+│   │   │   ├── CircuitBreakerConfig.java
+│   │   │   ├── JwtConfig.java
+│   │   │   ├── LlmConfig.java
+│   │   │   ├── OAuth2ResourceServerConfig.java
+│   │   │   └── OpenApiConfig.java
+│   │   ├── controller/          # REST 控制器
+│   │   │   ├── AuthController.java
+│   │   │   ├── ConversationController.java
+│   │   │   ├── KnowledgeController.java
+│   │   │   ├── LlmController.java
+│   │   │   ├── RagController.java
+│   │   │   └── DataPipelineController.java
+│   │   ├── service/             # 业务逻辑
+│   │   ├── repository/          # 数据访问
+│   │   ├── model/               # 实体类
+│   │   ├── dto/                 # 数据传输对象
+│   │   ├── security/            # 安全配置
+│   │   ├── exception/           # 异常处理
+│   │   ├── aspect/              # AOP 切面
+│   │   └── health/              # 健康检查
+│   ├── src/main/resources/
+│   │   ├── application.yml
+│   │   ├── application-dev.yml
+│   │   ├── application-prod.yml
+│   │   └── application-test.yml
+│   └── pom.xml
+│
+├── frontend/                     # React 前端
+│   ├── src/
+│   │   ├── app/                 # 应用入口
+│   │   ├── features/            # 功能模块
+│   │   │   ├── conversations/   # 对话功能
+│   │   │   ├── knowledge/       # 知识库功能
+│   │   │   ├── llm/             # LLM 交互
+│   │   │   └── rag/             # RAG 功能
+│   │   ├── core/                # 核心功能
+│   │   │   ├── api/             # API 客户端
+│   │   │   ├── state/           # 状态管理
+│   │   │   └── utils/           # 工具函数
+│   │   ├── shared/              # 共享组件
+│   │   └── styles/              # 样式文件
+│   ├── package.json
+│   ├── vite.config.ts
+│   └── tsconfig.json
+│
+├── python-services/              # Python 微服务
+│   ├── ml-service/              # ML/AI 服务
+│   │   ├── app.py               # FastAPI 应用
+│   │   ├── llm_integration.py   # LLM 集成
+│   │   ├── rag_engine.py        # RAG 引擎
+│   │   ├── vector_store.py      # 向量存储
+│   │   ├── requirements.txt
+│   │   └── Dockerfile
+│   ├── data-processing/         # 数据处理服务
+│   │   ├── app.py
+│   │   ├── data_processor.py
+│   │   ├── requirements.txt
+│   │   └── Dockerfile
+│   └── airflow/                 # Airflow DAGs
+│       ├── dags/
+│       │   ├── etl_pipeline_dag.py
+│       │   ├── data_quality_dag.py
+│       │   └── data_ingestion_dag.py
+│       ├── docker-compose.yml
+│       └── requirements.txt
+│
+├── infra/                        # 基础设施配置
+│   ├── docker-compose.yml       # Docker Compose 配置
+│   ├── k8s/                     # Kubernetes 配置
+│   │   ├── namespace.yaml
+│   │   ├── configmap.yaml
+│   │   ├── secrets.yaml
+│   │   ├── backend-deployment.yaml
+│   │   ├── frontend-deployment.yaml
+│   │   ├── ml-service-deployment.yaml
+│   │   ├── postgres-deployment.yaml
+│   │   ├── redis-deployment.yaml
+│   │   ├── ingress.yaml
+│   │   └── kustomization.yaml
+│   └── monitoring/              # 监控配置
+│       ├── prometheus.yml
+│       └── grafana/
+│
+├── data-quality/                 # 数据质量检查
+│   ├── data_quality_checks.py
+│   ├── requirements.txt
+│   └── great_expectations/
+│
+├── scripts/                      # 部署脚本
+│   ├── deploy-k8s.sh
+│   ├── start-dev.sh
+│   └── stop-dev.sh
+│
+├── docs/                         # 项目文档
+├── .env.example                  # 环境变量模板
+└── README.md
 ```
 
 ---
@@ -308,47 +461,149 @@ src/main/java/com/java/demo/
 ## 📚 API 文档
 
 ### 访问 API 文档
-- **Swagger UI**: http://localhost:8080/swagger-ui.html
-- **OpenAPI JSON**: http://localhost:8080/v3/api-docs
+- **后端 Swagger UI**: http://localhost:8080/swagger-ui.html
+- **后端 OpenAPI JSON**: http://localhost:8080/v3/api-docs
+- **ML 服务 API 文档**: http://localhost:8001/docs
 
-### 对话管理 API
+### 核心 API 端点
 
-#### 创建对话
+#### 1. 对话管理 API
+
 ```bash
+# 创建对话
 curl -X POST http://localhost:8080/api/conversations \
   -H "Content-Type: application/json" \
+  -H "Authorization: Bearer YOUR_JWT_TOKEN" \
   -d '{
     "subject": "技术支持",
     "customerEmail": "customer@example.com",
     "initialMessage": "如何重置密码？"
   }'
-```
 
-#### 获取对话详情
-```bash
-curl http://localhost:8080/api/conversations/1
-```
+# 获取对话详情
+curl http://localhost:8080/api/conversations/1 \
+  -H "Authorization: Bearer YOUR_JWT_TOKEN"
 
-#### 添加消息
-```bash
+# 添加消息
 curl -X POST http://localhost:8080/api/conversations/1/messages \
   -H "Content-Type: application/json" \
+  -H "Authorization: Bearer YOUR_JWT_TOKEN" \
   -d '{
     "sender": "AGENT",
     "content": "您可以点击登录页面的'忘记密码'链接"
   }'
 ```
 
-### 知识库 API
+#### 2. 知识库 API
 
-#### 获取所有 FAQ
 ```bash
+# 获取所有 FAQ
 curl http://localhost:8080/api/knowledge/faqs
+
+# 搜索 FAQ
+curl "http://localhost:8080/api/knowledge/faqs/search?query=密码"
 ```
 
-#### 搜索 FAQ
+#### 3. LLM API
+
 ```bash
-curl "http://localhost:8080/api/knowledge/faqs/search?query=密码"
+# 生成文本
+curl -X POST http://localhost:8080/api/llm/generate \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer YOUR_JWT_TOKEN" \
+  -d '{
+    "prompt": "解释什么是机器学习",
+    "model": "gpt-4",
+    "maxTokens": 500,
+    "temperature": 0.7
+  }'
+
+# 聊天对话
+curl -X POST http://localhost:8080/api/llm/chat \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer YOUR_JWT_TOKEN" \
+  -d '{
+    "messages": [
+      {"role": "user", "content": "你好"}
+    ],
+    "model": "gpt-4"
+  }'
+
+# 获取可用模型
+curl http://localhost:8080/api/llm/models \
+  -H "Authorization: Bearer YOUR_JWT_TOKEN"
+```
+
+#### 4. RAG API
+
+```bash
+# 索引文档
+curl -X POST http://localhost:8080/api/rag/index \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer YOUR_JWT_TOKEN" \
+  -d '{
+    "content": "Spring Boot 是一个开源的 Java 框架...",
+    "metadata": {
+      "title": "Spring Boot 介绍",
+      "category": "技术文档"
+    }
+  }'
+
+# RAG 查询
+curl -X POST http://localhost:8080/api/rag/query \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer YOUR_JWT_TOKEN" \
+  -d '{
+    "query": "什么是 Spring Boot？",
+    "topK": 3,
+    "includeMetadata": true
+  }'
+
+# 获取统计信息
+curl http://localhost:8080/api/rag/stats \
+  -H "Authorization: Bearer YOUR_JWT_TOKEN"
+```
+
+#### 5. 数据管道 API
+
+```bash
+# 触发 ETL 管道
+curl -X POST http://localhost:8080/api/pipeline/trigger-etl \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer YOUR_JWT_TOKEN" \
+  -d '{
+    "dagId": "etl_pipeline",
+    "conf": {}
+  }'
+
+# 获取管道状态
+curl http://localhost:8080/api/pipeline/dag-runs/etl_pipeline \
+  -H "Authorization: Bearer YOUR_JWT_TOKEN"
+
+# 获取管道指标
+curl http://localhost:8080/api/pipeline/metrics \
+  -H "Authorization: Bearer YOUR_JWT_TOKEN"
+```
+
+#### 6. 认证 API
+
+```bash
+# 用户注册
+curl -X POST http://localhost:8080/api/auth/signup \
+  -H "Content-Type: application/json" \
+  -d '{
+    "username": "user@example.com",
+    "password": "SecurePass123!",
+    "email": "user@example.com"
+  }'
+
+# 用户登录
+curl -X POST http://localhost:8080/api/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{
+    "username": "user@example.com",
+    "password": "SecurePass123!"
+  }'
 ```
 
 ---
@@ -358,6 +613,8 @@ curl "http://localhost:8080/api/knowledge/faqs/search?query=密码"
 ### 后端测试
 
 ```bash
+cd backend
+
 # 运行所有测试
 mvn test
 
@@ -368,7 +625,8 @@ mvn verify
 mvn clean test jacoco:report
 
 # 查看覆盖率报告
-open target/site/jacoco/index.html
+open target/site/jacoco/index.html  # macOS
+start target/site/jacoco/index.html # Windows
 ```
 
 ### 前端测试
@@ -379,16 +637,35 @@ cd frontend
 # 运行测试
 npm test
 
+# 运行测试（监听模式）
+npm run test:watch
+
 # 运行测试（UI 模式）
 npm run test:ui
 
+# 代码检查
+npm run lint
+```
+
+### Python 服务测试
+
+```bash
+cd python-services/ml-service
+
+# 安装测试依赖
+pip install pytest pytest-cov
+
+# 运行测试
+pytest
+
 # 生成覆盖率报告
-npm run test:coverage
+pytest --cov=. --cov-report=html
 ```
 
 ### 测试覆盖率目标
 - **后端**: > 80%
 - **前端**: > 70%
+- **Python 服务**: > 75%
 
 ---
 
@@ -397,21 +674,17 @@ npm run test:coverage
 ### 健康检查端点
 
 ```bash
+# 后端健康检查
+curl http://localhost:8080/actuator/health
+
 # Liveness 探针
 curl http://localhost:8080/actuator/health/liveness
 
 # Readiness 探针
 curl http://localhost:8080/actuator/health/readiness
 
-# 详细健康信息
-curl http://localhost:8080/actuator/health
-```
-
-### 前端健康检查
-
-```bash
-# Nginx 健康检查
-curl http://localhost:3000/health
+# ML 服务健康检查
+curl http://localhost:8001/health
 ```
 
 ### 指标端点
@@ -425,7 +698,17 @@ curl http://localhost:8080/actuator/metrics
 
 # 特定指标
 curl http://localhost:8080/actuator/metrics/jvm.memory.used
+curl http://localhost:8080/actuator/metrics/http.server.requests
 ```
+
+### Grafana 仪表板
+
+访问 http://localhost:3001 查看预配置的仪表板：
+- **应用性能监控**: API 响应时间、吞吐量、错误率
+- **JVM 监控**: 内存使用、GC 活动、线程状态
+- **数据库监控**: 连接池、查询性能
+- **Redis 监控**: 缓存命中率、内存使用
+- **业务指标**: 对话数量、LLM 调用统计
 
 ---
 
@@ -434,11 +717,20 @@ curl http://localhost:8080/actuator/metrics/jvm.memory.used
 ### 已实施的优化
 
 #### 后端优化
-- **数据库连接池**: HikariCP 配置优化
-- **索引优化**: customer_email, status, started_at
+- **数据库连接池**: HikariCP 高性能配置
+- **索引优化**: 关键字段索引（customer_email, status, started_at）
 - **查询优化**: JOIN FETCH 避免 N+1 问题
-- **Redis 缓存**: FAQ 列表和单条缓存
+- **多层缓存**: 
+  - L1: 本地缓存（Caffeine）
+  - L2: Redis 分布式缓存
 - **异步处理**: ThreadPoolTaskExecutor 配置
+- **批处理**: Spring Batch 大规模数据处理
+
+#### ML 服务优化
+- **模型缓存**: 预加载常用模型
+- **批量推理**: 批量处理请求以提高吞吐量
+- **向量索引**: HNSW 算法快速相似度搜索
+- **连接池**: 数据库和 API 连接复用
 
 #### 前端优化
 - **代码分割**: React.lazy 和 Suspense
@@ -452,6 +744,8 @@ curl http://localhost:8080/actuator/metrics/jvm.memory.used
 | 指标 | 目标值 | 当前值 |
 |------|--------|--------|
 | API 响应时间 (P95) | < 200ms | ~150ms |
+| LLM API 响应时间 (P95) | < 2s | ~1.5s |
+| RAG 查询时间 (P95) | < 500ms | ~400ms |
 | 前端首次加载 | < 2s | ~1.5s |
 | 数据库查询时间 | < 50ms | ~30ms |
 | 缓存命中率 | > 80% | ~85% |
@@ -463,20 +757,35 @@ curl http://localhost:8080/actuator/metrics/jvm.memory.used
 
 ### 当前实现
 
+- ✅ **JWT 认证**: 无状态令牌认证
+- ✅ **OAuth2 资源服务器**: 标准化授权
 - ✅ **CORS 配置**: 限制允许的源
 - ✅ **输入验证**: Bean Validation
 - ✅ **异常处理**: 统一错误响应
 - ✅ **SQL 注入防护**: JPA 参数化查询
 - ✅ **XSS 防护**: Nginx 安全头
 - ✅ **HTTPS 就绪**: 生产环境配置
+- ✅ **API 密钥管理**: 环境变量隔离
+- ✅ **熔断限流**: Resilience4j 保护
 
-### 计划增强
+### 安全最佳实践
 
-- [ ] **Spring Security + OAuth2**: 认证授权
-- [ ] **JWT Token**: 无状态认证
-- [ ] **RBAC**: 角色基础访问控制
-- [ ] **API 限流**: Resilience4j RateLimiter
-- [ ] **数据加密**: 传输层 + 存储层加密
+```bash
+# 1. 使用强密码和密钥
+JWT_SECRET=使用至少32字符的随机字符串
+
+# 2. 定期轮换 API 密钥
+OPENAI_API_KEY=定期更新
+
+# 3. 生产环境禁用调试模式
+SPRING_PROFILES_ACTIVE=prod
+
+# 4. 使用 HTTPS
+# 在生产环境中配置 SSL/TLS 证书
+
+# 5. 限制 CORS 源
+# 仅允许信任的域名访问 API
+```
 
 ---
 
@@ -486,125 +795,44 @@ curl http://localhost:8080/actuator/metrics/jvm.memory.used
 
 ```bash
 # 构建后端镜像
-docker build -t spring-boot-demo:latest .
+cd backend
+docker build -t spring-boot-demo-backend:latest .
 
 # 构建前端镜像
 cd frontend
 docker build -t spring-boot-demo-frontend:latest .
+
+# 构建 ML 服务镜像
+cd python-services/ml-service
+docker build -t spring-boot-demo-ml:latest .
 ```
 
-### Docker Compose 配置
+### Docker Compose 服务说明
 
-完整的 docker-compose.yml 包含：
-- PostgreSQL 数据库
-- Redis 缓存
-- Spring Boot 后端
-- React 前端 (Nginx)
+完整的 docker-compose.yml 包含以下服务：
+
+#### 数据层
+- **postgres**: PostgreSQL 15 主数据库
+- **redis**: Redis 7 缓存
+- **weaviate**: 向量数据库（可选）
+- **chromadb**: 轻量级向量数据库（可选）
+
+#### 应用层
+- **backend**: Spring Boot 后端服务
+- **frontend**: React 前端（Nginx）
+- **ml-service**: Python ML/AI 服务
+- **data-processing**: 数据处理服务
+
+#### 数据编排
+- **airflow-postgres**: Airflow 元数据库
+- **airflow-webserver**: Airflow Web UI
+- **airflow-scheduler**: Airflow 调度器
+
+#### 监控层
+- **prometheus**: 指标收集
+- **grafana**: 可视化仪表板
 
 所有服务都配置了健康检查和自动重启。
-
----
-
-## 🎯 部署架构总结
-
-### 本地开发环境
-```
-┌─────────────────────────────────────────┐
-│  前端 (React Dev Server)                 │
-│  http://localhost:3000                  │
-│  - Vite 开发服务器                       │
-│  - 热模块替换 (HMR)                      │
-│  - API 代理到后端                        │
-└─────────────────────────────────────────┘
-                    ↓
-┌─────────────────────────────────────────┐
-│  后端 (Spring Boot)                      │
-│  http://localhost:8080                  │
-│  - REST API                             │
-│  - 业务逻辑处理                          │
-│  - CORS 配置                            │
-└─────────────────────────────────────────┘
-          ↓                    ↓
-┌──────────────────┐  ┌──────────────────┐
-│  PostgreSQL      │  │  Redis           │
-│  localhost:5432  │  │  localhost:6379  │
-│  (Docker)        │  │  (Docker)        │
-└──────────────────┘  └──────────────────┘
-```
-
-### Docker Compose 部署
-```
-┌─────────────────────────────────────────┐
-│  前端 (Nginx)                            │
-│  http://localhost:3000                  │
-│  - 静态文件服务                          │
-│  - Gzip 压缩                            │
-│  - API 反向代理                          │
-└─────────────────────────────────────────┘
-                    ↓
-┌─────────────────────────────────────────┐
-│  后端 (Spring Boot)                      │
-│  http://localhost:8080                  │
-│  - REST API 服务                        │
-│  - 健康检查端点                          │
-└─────────────────────────────────────────┘
-          ↓                    ↓
-┌──────────────────┐  ┌──────────────────┐
-│  PostgreSQL      │  │  Redis           │
-│  postgres:5432   │  │  redis:6379      │
-│  (容器内部)      │  │  (容器内部)      │
-└──────────────────┘  └──────────────────┘
-```
-
-### Kubernetes 部署
-```
-┌─────────────────────────────────────────┐
-│  前端 Pod (Nginx)                        │
-│  NodePort: 30000                        │
-│  - 副本数: 1                             │
-│  - 资源: 64Mi-128Mi, 100m-200m CPU      │
-└─────────────────────────────────────────┘
-                    ↓
-┌─────────────────────────────────────────┐
-│  后端 Pod (Spring Boot)                  │
-│  NodePort: 30080                        │
-│  - 副本数: 1 (本地) / 3+ (生产)          │
-│  - 资源: 256Mi-512Mi, 250m-500m CPU     │
-│  - 健康探针: Liveness + Readiness       │
-│  - 自动扩缩容 (HPA)                      │
-└─────────────────────────────────────────┘
-          ↓                    ↓
-┌──────────────────┐  ┌──────────────────┐
-│  PostgreSQL Pod  │  │  Redis Pod       │
-│  ClusterIP:5432  │  │  ClusterIP:6379  │
-│  - 持久化存储    │  │  - 内存缓存      │
-└──────────────────┘  └──────────────────┘
-```
-
-### 生产环境部署
-```
-┌─────────────────────────────────────────┐
-│  CDN / Load Balancer                    │
-│  - SSL/TLS 终止                         │
-│  - DDoS 防护                            │
-└─────────────────────────────────────────┘
-                    ↓
-┌─────────────────────────────────────────┐
-│  Kubernetes Ingress                     │
-│  - 路由规则                              │
-│  - SSL 证书管理                          │
-└─────────────────────────────────────────┘
-          ↓                    ↓
-┌──────────────────┐  ┌──────────────────┐
-│  前端服务        │  │  后端服务        │
-│  (多副本)        │  │  (多副本 + HPA)  │
-└──────────────────┘  └──────────────────┘
-          ↓                    ↓
-┌──────────────────┐  ┌──────────────────┐
-│  外部 PostgreSQL │  │  外部 Redis      │
-│  (托管服务)      │  │  (托管服务)      │
-└──────────────────┘  └──────────────────┘
-```
 
 ---
 
@@ -617,242 +845,71 @@ docker build -t spring-boot-demo-frontend:latest .
 2. 进入 Settings → Kubernetes
 3. 勾选 "Enable Kubernetes"
 4. 点击 "Apply & Restart"
-5. 等待 Kubernetes 启动完成（状态显示为绿色）
 
-### 方式 1：本地 Kubernetes 全栈部署（推荐）
-
-#### 1. 构建本地镜像
+### 部署到 Kubernetes
 
 ```bash
-# 构建后端镜像
-mvn clean package -DskipTests
-docker build -t spring-boot-demo:latest .
+# 进入 K8s 配置目录
+cd infra/k8s
 
-# 构建前端镜像
-cd frontend
-docker build -t spring-boot-demo-frontend:latest .
-cd ..
+# 使用 Kustomize 部署所有资源
+kubectl apply -k .
 
-# 验证镜像已创建
-docker images | grep spring-boot-demo
-```
-
-#### 2. 部署到 Kubernetes
-
-```bash
-# 部署所有服务（PostgreSQL + Redis + 后端 + 前端）
-kubectl apply -f k8s/local-deployment.yaml
+# 或者单独部署
+kubectl apply -f namespace.yaml
+kubectl apply -f configmap.yaml
+kubectl apply -f secrets.yaml
+kubectl apply -f postgres-deployment.yaml
+kubectl apply -f redis-deployment.yaml
+kubectl apply -f backend-deployment.yaml
+kubectl apply -f ml-service-deployment.yaml
+kubectl apply -f frontend-deployment.yaml
+kubectl apply -f ingress.yaml
 
 # 查看所有资源
-kubectl get all
+kubectl get all -n spring-boot-demo
 
 # 查看 Pod 状态
-kubectl get pods
+kubectl get pods -n spring-boot-demo
 
 # 查看服务
-kubectl get svc
+kubectl get svc -n spring-boot-demo
 ```
 
-#### 3. 访问应用
+### 访问应用
 
 ```bash
-# 前端应用（React）
-http://localhost:30000
+# 获取服务 URL
+kubectl get ingress -n spring-boot-demo
 
-# 后端 API
-http://localhost:30080/api
-
-# API 文档
-http://localhost:30080/swagger-ui.html
-
-# 健康检查
-http://localhost:30080/actuator/health
+# 或使用端口转发
+kubectl port-forward -n spring-boot-demo svc/backend 8080:8080
+kubectl port-forward -n spring-boot-demo svc/frontend 3000:80
+kubectl port-forward -n spring-boot-demo svc/ml-service 8001:8001
 ```
 
-**提示**: 应用启动可能需要 1-2 分钟，请耐心等待所有 Pod 变为 Running 状态。
-
-#### 4. Kubernetes 常用命令
+### Kubernetes 常用命令
 
 ```bash
-# 查看 Pod 详细信息
-kubectl describe pod <pod-name>
+# 查看日志
+kubectl logs -f -n spring-boot-demo deployment/backend
+kubectl logs -f -n spring-boot-demo deployment/ml-service
 
-# 查看后端应用日志
-kubectl logs -f deployment/spring-boot-demo
+# 扩缩容
+kubectl scale -n spring-boot-demo deployment/backend --replicas=3
 
-# 查看前端应用日志
-kubectl logs -f deployment/frontend
-
-# 查看 PostgreSQL 日志
-kubectl logs -f deployment/postgres
-
-# 查看 Redis 日志
-kubectl logs -f deployment/redis
-
-# 进入后端容器
-kubectl exec -it deployment/spring-boot-demo -- sh
-
-# 进入前端容器
-kubectl exec -it deployment/frontend -- sh
-
-# 查看服务详情
-kubectl describe svc spring-boot-demo-service
-kubectl describe svc frontend-service
-
-# 端口转发（如果 NodePort 不可用）
-kubectl port-forward svc/spring-boot-demo-service 8080:8080
-kubectl port-forward svc/frontend-service 3000:80
-```
-
-#### 5. 更新和重启
-
-```bash
-# 代码更改后重新部署后端
-mvn clean package -DskipTests
-docker build -t spring-boot-demo:latest .
-kubectl rollout restart deployment/spring-boot-demo
-
-# 代码更改后重新部署前端
-cd frontend
-docker build -t spring-boot-demo-frontend:latest .
-kubectl rollout restart deployment/frontend
-
-# 查看滚动更新状态
-kubectl rollout status deployment/spring-boot-demo
-kubectl rollout status deployment/frontend
+# 滚动更新
+kubectl rollout restart -n spring-boot-demo deployment/backend
 
 # 查看部署历史
-kubectl rollout history deployment/spring-boot-demo
-kubectl rollout history deployment/frontend
+kubectl rollout history -n spring-boot-demo deployment/backend
 
-# 回滚到上一个版本
-kubectl rollout undo deployment/spring-boot-demo
-kubectl rollout undo deployment/frontend
-```
+# 回滚
+kubectl rollout undo -n spring-boot-demo deployment/backend
 
-#### 6. 扩缩容
-
-```bash
-# 手动扩容后端到 3 个副本
-kubectl scale deployment spring-boot-demo --replicas=3
-
-# 手动扩容前端到 2 个副本
-kubectl scale deployment frontend --replicas=2
-
-# 查看副本状态
-kubectl get pods -l app=spring-boot-demo
-kubectl get pods -l app=frontend
-
-# 缩容到 1 个副本
-kubectl scale deployment spring-boot-demo --replicas=1
-kubectl scale deployment frontend --replicas=1
-```
-
-#### 7. 清理资源
-
-```bash
 # 删除所有资源
-kubectl delete -f k8s/local-deployment.yaml
-
-# 或单独删除
-kubectl delete deployment spring-boot-demo
-kubectl delete deployment frontend
-kubectl delete deployment postgres
-kubectl delete deployment redis
-kubectl delete svc spring-boot-demo-service
-kubectl delete svc frontend-service
-kubectl delete svc postgres
-kubectl delete svc redis
-
-# 查看剩余资源
-kubectl get all
+kubectl delete -k .
 ```
-
-#### 8. 故障排查
-
-```bash
-# 查看 Pod 事件
-kubectl get events --sort-by=.metadata.creationTimestamp
-
-# 查看 Pod 详细状态
-kubectl describe pod <pod-name>
-
-# 查看容器日志（如果 Pod 启动失败）
-kubectl logs <pod-name>
-
-# 查看上一次容器日志（如果容器重启了）
-kubectl logs <pod-name> --previous
-
-# 检查镜像拉取策略
-kubectl describe pod <pod-name> | grep -i image
-
-# 检查服务端点
-kubectl get endpoints
-
-# 测试服务连接
-kubectl run -it --rm debug --image=busybox --restart=Never -- sh
-# 在容器内测试
-wget -O- http://spring-boot-demo-service:8080/actuator/health
-wget -O- http://frontend-service:80
-```
-
-### 方式 2：生产环境 Kubernetes 部署
-
-**注意**: 此配置适用于生产环境，需要外部 PostgreSQL 和 Redis 服务。
-
-```bash
-# 应用生产环境配置
-kubectl apply -f k8s/deployment.yaml
-
-# 查看部署状态
-kubectl get pods -l app=spring-boot-demo
-
-# 查看服务
-kubectl get svc spring-boot-demo-service
-
-# 查看自动扩缩容状态
-kubectl get hpa spring-boot-demo-hpa
-
-# 查看日志
-kubectl logs -f deployment/spring-boot-demo
-
-# 查看所有资源
-kubectl get all -l app=spring-boot-demo
-```
-
-### Kubernetes 资源配置说明
-
-#### 后端部署 (spring-boot-demo)
-- **副本数**: 1（本地）/ 3（生产）
-- **资源限制**:
-  - CPU: 250m - 500m（本地）/ 500m - 1000m（生产）
-  - Memory: 256Mi - 512Mi（本地）/ 512Mi - 1Gi（生产）
-- **健康探针**:
-  - Liveness: /actuator/health/liveness
-  - Readiness: /actuator/health/readiness
-- **端口**: NodePort 30080（本地）
-- **性能调优**: 已在配置文件中包含资源优化和 HPA 配置
-
-#### 前端部署 (frontend)
-- **副本数**: 1（本地）
-- **资源限制**:
-  - CPU: 100m - 200m
-  - Memory: 64Mi - 128Mi
-- **端口**: NodePort 30000（本地）
-- **环境变量**: VITE_API_BASE_URL
-
-#### 数据库部署 (postgres)
-- **镜像**: postgres:15-alpine
-- **端口**: 5432
-- **环境变量**: POSTGRES_DB, POSTGRES_USER, POSTGRES_PASSWORD
-
-#### 缓存部署 (redis)
-- **镜像**: redis:7-alpine
-- **端口**: 6379
-
-**注意**: 详细的性能调优配置（包括资源请求/限制和自动扩缩容策略）已集成到 k8s 配置文件中。请查看：
-- 生产环境：`k8s/deployment.yaml`
-- 本地开发：`k8s/local-deployment.yaml`
 
 ---
 
@@ -865,80 +922,58 @@ kubectl get all -l app=spring-boot-demo
 1. **后端构建和测试**
    - Maven 构建
    - 单元测试和集成测试
-   - 代码覆盖率报告
+   - 代码覆盖率报告（JaCoCo）
 
 2. **前端构建和测试**
    - npm 构建
    - ESLint 检查
-   - 单元测试
+   - 单元测试（Vitest）
    - 生产构建
 
-3. **代码质量分析**
-   - SonarQube 扫描
+3. **Python 服务测试**
+   - pytest 单元测试
+   - 代码覆盖率
 
-4. **安全扫描**
+4. **代码质量分析**
+   - SonarQube 扫描（可选）
+
+5. **安全扫描**
    - Trivy 漏洞扫描
+   - 依赖检查
 
-5. **Docker 镜像构建**
+6. **Docker 镜像构建**
    - 多阶段构建
-   - 镜像推送
+   - 镜像推送到 Registry
 
-6. **多环境部署**
+7. **多环境部署**
    - Staging 自动部署
    - Production 手动批准
 
 ---
 
-## ️ 故障排查
+## 🎯 AI/ML 功能详解
 
-### 常见问题
+### LLM 集成
 
-#### 1. 前端无法连接后端
+支持多个 LLM 提供商：
+- **OpenAI**: GPT-4, GPT-3.5-turbo
+- **Anthropic**: Claude 3 系列
+- **自动故障转移**: 主模型失败时自动切换到备用模型
 
-```bash
-# 检查后端是否运行
-curl http://localhost:8080/actuator/health
+### RAG (检索增强生成)
 
-# 检查 CORS 配置
-# 确保 WebConfig.java 中包含前端 URL
+1. **文档索引**: 将文档转换为向量并存储
+2. **语义搜索**: 基于查询检索相关文档
+3. **上下文增强**: 将检索结果注入 LLM 提示
+4. **生成回答**: 基于上下文生成准确回答
 
-# 检查前端代理配置
-# vite.config.ts 中的 proxy 设置
-```
+### 向量数据库选择
 
-#### 2. Docker 构建失败
-
-```bash
-# 清理 Docker 缓存
-docker system prune -a
-
-# 重新构建
-docker-compose build --no-cache
-```
-
-#### 3. 前端依赖安装失败
-
-```bash
-# 清理 node_modules
-cd frontend
-rm -rf node_modules package-lock.json
-
-# 重新安装
-npm install
-```
-
-#### 4. 数据库连接失败
-
-```bash
-# 检查 PostgreSQL 状态
-docker-compose ps postgres
-
-# 查看日志
-docker-compose logs postgres
-
-# 重启服务
-docker-compose restart postgres
-```
+| 数据库 | 适用场景 | 优势 |
+|--------|----------|------|
+| **ChromaDB** | 本地开发、小规模 | 轻量级、易部署 |
+| **Weaviate** | 生产环境、中大规模 | 高性能、云原生 |
+| **Pinecone** | 托管服务 | 免运维、自动扩展 |
 
 ---
 
@@ -948,11 +983,13 @@ docker-compose restart postgres
 - **测试覆盖率**: 
   - 后端: > 80%
   - 前端: > 70%
+  - Python 服务: > 75%
 - **代码重复率**: < 3%
 - **技术债务**: < 5%
 
 ### 性能指标
 - **API 响应时间 (P95)**: < 200ms
+- **LLM API 响应时间 (P95)**: < 2s
 - **前端首次加载**: < 2s
 - **系统可用性**: > 99.9%
 - **错误率**: < 0.1%
@@ -965,6 +1002,77 @@ docker-compose restart postgres
 
 ---
 
+## 🛠️ 故障排查
+
+### 常见问题
+
+#### 1. 后端无法连接数据库
+
+```bash
+# 检查 PostgreSQL 状态
+docker-compose ps postgres
+
+# 查看日志
+docker-compose logs postgres
+
+# 重启服务
+docker-compose restart postgres
+```
+
+#### 2. ML 服务启动失败
+
+```bash
+# 检查 API 密钥配置
+cat .env | grep API_KEY
+
+# 查看详细日志
+docker-compose logs ml-service
+
+# 重新构建
+docker-compose up -d --build ml-service
+```
+
+#### 3. 前端无法连接后端
+
+```bash
+# 检查后端是否运行
+curl http://localhost:8080/actuator/health
+
+# 检查 CORS 配置
+# 确保 WebConfig.java 中包含前端 URL
+
+# 检查前端代理配置
+# vite.config.ts 中的 proxy 设置
+```
+
+#### 4. Airflow DAG 未显示
+
+```bash
+# 检查 DAG 文件路径
+docker-compose exec airflow-webserver ls /opt/airflow/dags
+
+# 重启 Airflow
+docker-compose restart airflow-webserver airflow-scheduler
+
+# 查看日志
+docker-compose logs airflow-scheduler
+```
+
+#### 5. 向量数据库连接失败
+
+```bash
+# 检查向量数据库状态
+docker-compose ps chromadb
+
+# 测试连接
+curl http://localhost:8000/api/v1/heartbeat
+
+# 重启服务
+docker-compose restart chromadb
+```
+
+---
+
 ## 🤝 贡献指南
 
 1. Fork 项目
@@ -974,8 +1082,8 @@ docker-compose restart postgres
 5. 开启 Pull Request
 
 ### 代码规范
-- 遵循 Java 和 TypeScript 编码规范
-- 编写单元测试
+- 遵循 Java、TypeScript 和 Python 编码规范
+- 编写单元测试和集成测试
 - 更新相关文档
 - 通过所有 CI 检查
 
@@ -991,22 +1099,54 @@ docker-compose restart postgres
 
 - **项目维护者**: Development Team
 - **Email**: dev@example.com
-- **问题反馈**: [GitHub Issues](https://github.com/yourusername/spring-boot-demo/issues)
+- **问题反馈**: [GitHub Issues](https://github.com/Isabellakuang/spring-boot-demo/issues)
 
 ---
 
 ## 🙏 致谢
 
-本项目展示了企业级全栈应用的最佳实践，包括：
-- 现代化前后端分离架构
-- 云原生部署
-- 完善的监控体系
-- 自动化 CI/CD
-- 高可用性设计
+本项目展示了现代化 AI 驱动的企业级全栈应用的最佳实践，包括：
+- **微服务架构**: Spring Boot + FastAPI
+- **AI/ML 集成**: LLM + RAG + 向量数据库
+- **数据工程**: Airflow + ETL + 数据质量
+- **云原生部署**: Docker + Kubernetes
+- **完善的监控**: Prometheus + Grafana + Zipkin
+- **自动化 CI/CD**: GitHub Actions
+- **高可用性设计**: 缓存 + 熔断 + 限流
 
 ---
 
-**注意**: 这是一个演示项目，用于展示企业级全栈应用的最佳实践。生产环境部署前请进行适当的安全加固和配置调整。
+## 🗺️ 路线图
+
+### 已完成 ✅
+- [x] Spring Boot 后端基础架构
+- [x] React 前端应用
+- [x] LLM 集成（OpenAI、Anthropic）
+- [x] RAG 引擎实现
+- [x] 向量数据库集成
+- [x] Airflow 数据管道
+- [x] Docker Compose 部署
+- [x] Kubernetes 配置
+- [x] 监控和可观测性
+- [x] JWT 认证
+
+### 进行中 🚧
+- [ ] 完善数据质量检查
+- [ ] 增强 RAG 性能
+- [ ] 添加更多 LLM 提供商
+- [ ] 优化向量搜索算法
+
+### 计划中 📋
+- [ ] 微服务拆分
+- [ ] 服务网格（Istio）
+- [ ] 多租户支持
+- [ ] 实时流处理（Kafka）
+- [ ] 高级 AI 功能（Agent、Tool Use）
+- [ ] 移动端应用
+
+---
+
+**注意**: 这是一个演示项目，用于展示 AI 驱动的企业级全栈应用的最佳实践。生产环境部署前请进行适当的安全加固和配置调整。
 
 **最后更新**: 2025-01-10  
-**版本**: 2.0.0 (Full-Stack)
+**版本**: 3.0.0 (AI-Powered Full-Stack Platform)
