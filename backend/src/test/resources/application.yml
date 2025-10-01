@@ -1,0 +1,35 @@
+spring:
+  datasource:
+    url: jdbc:h2:mem:veratest;DB_CLOSE_DELAY=-1
+    driver-class-name: org.h2.Driver
+    username: sa
+    password:
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    properties:
+      hibernate:
+        format_sql: false
+    show-sql: false
+  cache:
+    type: simple
+  data:
+    redis:
+      repositories:
+        enabled: false
+  autoconfigure:
+    exclude:
+      - org.springframework.boot.autoconfigure.data.redis.RedisAutoConfiguration
+      - org.springframework.boot.autoconfigure.data.redis.RedisRepositoriesAutoConfiguration
+
+logging:
+  level:
+    com.java.demo: DEBUG
+    org.springframework: WARN
+    org.hibernate: WARN
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics
