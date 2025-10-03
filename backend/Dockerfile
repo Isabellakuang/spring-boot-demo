@@ -1,29 +1,40 @@
 # 多阶段构建 - 构建阶段
-FROM eclipse-temurin:21-jdk-alpine AS builder
+# 使用阿里云镜像加速
+FROM docker.m.daocloud.io/library/maven:3.9-eclipse-temurin-21 AS builder
 WORKDIR /build
 
-# 复制 Maven 包装器和 pom.xml
-COPY .mvn/ .mvn/
-COPY mvnw pom.xml ./
+# 配置 Maven 使用阿里云镜像仓库加速依赖下载
+RUN mkdir -p /root/.m2 && \
+    echo '<?xml version="1.0" encoding="UTF-8"?>' > /root/.m2/settings.xml && \
+    echo '<settings>' >> /root/.m2/settings.xml && \
+    echo '  <mirrors>' >> /root/.m2/settings.xml && \
+    echo '    <mirror>' >> /root/.m2/settings.xml && \
+    echo '      <id>aliyun-maven</id>' >> /root/.m2/settings.xml && \
+    echo '      <mirrorOf>central</mirrorOf>' >> /root/.m2/settings.xml && \
+    echo '      <name>Aliyun Maven</name>' >> /root/.m2/settings.xml && \
+    echo '      <url>https://maven.aliyun.com/repository/public</url>' >> /root/.m2/settings.xml && \
+    echo '    </mirror>' >> /root/.m2/settings.xml && \
+    echo '  </mirrors>' >> /root/.m2/settings.xml && \
+    echo '</settings>' >> /root/.m2/settings.xml
+
+# 复制 pom.xml
+COPY pom.xml ./
 
 # 下载依赖（利用 Docker 缓存层）
-RUN ./mvnw dependency:go-offline -B
+RUN mvn dependency:go-offline -B
 
 # 复制源代码
 COPY src ./src
 
 # 构建应用
-RUN ./mvnw clean package -DskipTests -B
+RUN mvn clean package -DskipTests -B
 
-# 运行阶段
-FROM eclipse-temurin:21-jre-alpine
+# 运行阶段 - 使用 docker-0.unsee.tech 镜像
+FROM docker.m.daocloud.io/library/openjdk:21-jdk-slim
 WORKDIR /app
 
-# 添加 wget 用于健康检查
-RUN apk add --no-cache wget
-
 # 创建非 root 用户
-RUN addgroup -S spring && adduser -S spring -G spring
+RUN groupadd -r spring && useradd -r -g spring spring
 USER spring:spring
 
 # 从构建阶段复制 JAR

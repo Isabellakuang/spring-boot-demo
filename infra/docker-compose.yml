@@ -1,75 +1,54 @@
+# Spring Boot Demo - Docker Compose Configuration
+# 简化版本，仅包含核心服务用于 NLP 和 RAG Flow 演示
+
 version: '3.8'
 
 services:
-  # ========== 数据库层 ==========
+  # PostgreSQL 数据库
   postgres:
     image: postgres:15-alpine
     container_name: demo-postgres
     environment:
       POSTGRES_DB: demo_db
       POSTGRES_USER: demo_user
-      POSTGRES_PASSWORD: demo_password
+      POSTGRES_PASSWORD: demo_pass
     ports:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
       - ./init-scripts:/docker-entrypoint-initdb.d
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U demo_user"]
+      test: ["CMD-SHELL", "pg_isready -U demo_user -d demo_db"]
       interval: 10s
       timeout: 5s
       retries: 5
     networks:
       - demo-network
 
-  redis:
-    image: redis:7-alpine
-    container_name: demo-redis
+  # Python ML 服务 (用于 NLP 和 RAG)
+  ml-service:
+    build:
+      context: ../python-services/ml-service
+      dockerfile: Dockerfile
+    container_name: demo-ml-service
     ports:
-      - "6379:6379"
+      - "8001:8001"
+    environment:
+      VECTOR_DB_PROVIDER: chroma
+      CHROMA_PERSIST_DIR: /app/chroma_db
+      LOG_LEVEL: INFO
     volumes:
-      - redis_data:/data
-    command: redis-server --appendonly yes
+      - chroma_data:/app/chroma_db
     healthcheck:
-      test: ["CMD", "redis-cli", "ping"]
-      interval: 10s
-      timeout: 5s
+      test: ["CMD", "curl", "-f", "http://localhost:8001/health"]
+      interval: 30s
+      timeout: 10s
       retries: 5
     networks:
       - demo-network
+    restart: unless-stopped
 
-  # ========== 向量数据库 ==========
-  weaviate:
-    image: semitechnologies/weaviate:1.23.0
-    container_name: demo-weaviate
-    ports:
-      - "8081:8080"
-    environment:
-      QUERY_DEFAULTS_LIMIT: 25
-      AUTHENTICATION_ANONYMOUS_ACCESS_ENABLED: 'true'
-      PERSISTENCE_DATA_PATH: '/var/lib/weaviate'
-      DEFAULT_VECTORIZER_MODULE: 'none'
-      ENABLE_MODULES: ''
-      CLUSTER_HOSTNAME: 'node1'
-    volumes:
-      - weaviate_data:/var/lib/weaviate
-    networks:
-      - demo-network
-
-  # 备选：ChromaDB (轻量级本地向量数据库)
-  chromadb:
-    image: chromadb/chroma:latest
-    container_name: demo-chromadb
-    ports:
-      - "8000:8000"
-    volumes:
-      - chroma_data:/chroma/chroma
-    environment:
-      IS_PERSISTENT: "TRUE"
-    networks:
-      - demo-network
-
-  # ========== 后端服务 ==========
+  # Spring Boot 后端服务
   backend:
     build:
       context: ../backend
@@ -78,22 +57,12 @@ services:
     ports:
       - "8080:8080"
     environment:
-      SPRING_PROFILES_ACTIVE: prod
       SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/demo_db
       SPRING_DATASOURCE_USERNAME: demo_user
-      SPRING_DATASOURCE_PASSWORD: demo_password
-      SPRING_REDIS_HOST: redis
-      SPRING_REDIS_PORT: 6379
+      SPRING_DATASOURCE_PASSWORD: demo_pass
       ML_SERVICE_URL: http://ml-service:8001
-      AIRFLOW_URL: http://airflow-webserver:8080
-      AIRFLOW_USERNAME: admin
-      AIRFLOW_PASSWORD: admin
-      JWT_SECRET: ${JWT_SECRET:-your-super-secret-jwt-key-change-in-production}
-      JWT_EXPIRATION: 86400000
     depends_on:
       postgres:
-        condition: service_healthy
-      redis:
         condition: service_healthy
       ml-service:
         condition: service_started
@@ -107,165 +76,7 @@ services:
       - demo-network
     restart: unless-stopped
 
-  # ========== Python ML 服务 ==========
-  ml-service:
-    build:
-      context: ../python-services/ml-service
-      dockerfile: Dockerfile
-    container_name: demo-ml-service
-    ports:
-      - "8001:8001"
-    environment:
-      # LLM API Keys
-      OPENAI_API_KEY: ${OPENAI_API_KEY}
-      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY}
-      
-      # 向量数据库配置
-      VECTOR_DB_PROVIDER: ${VECTOR_DB_PROVIDER:-chroma}
-      WEAVIATE_URL: http://weaviate:8080
-      PINECONE_API_KEY: ${PINECONE_API_KEY}
-      PINECONE_ENV: ${PINECONE_ENV}
-      CHROMA_HOST: chromadb
-      CHROMA_PORT: 8000
-      
-      # 其他配置
-      LOG_LEVEL: INFO
-    volumes:
-      - ml_models:/app/models
-      - chroma_local:/app/chroma_db
-    depends_on:
-      - chromadb
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8001/health"]
-      interval: 30s
-      timeout: 10s
-      retries: 5
-    networks:
-      - demo-network
-    restart: unless-stopped
-
-  # ========== 数据处理服务 ==========
-  data-processing:
-    build:
-      context: ../python-services/data-processing
-      dockerfile: Dockerfile
-    container_name: demo-data-processing
-    ports:
-      - "8002:8000"
-    environment:
-      DATABASE_URL: postgresql://demo_user:demo_password@postgres:5432/demo_db
-    depends_on:
-      postgres:
-        condition: service_healthy
-    networks:
-      - demo-network
-    restart: unless-stopped
-
-  # ========== Airflow 服务 ==========
-  airflow-postgres:
-    image: postgres:15-alpine
-    container_name: demo-airflow-postgres
-    environment:
-      POSTGRES_USER: airflow
-      POSTGRES_PASSWORD: airflow
-      POSTGRES_DB: airflow
-    volumes:
-      - airflow_postgres_data:/var/lib/postgresql/data
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U airflow"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-    networks:
-      - demo-network
-
-  airflow-init:
-    image: apache/airflow:2.8.0-python3.11
-    container_name: demo-airflow-init
-    environment:
-      AIRFLOW__CORE__EXECUTOR: LocalExecutor
-      AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://airflow:airflow@airflow-postgres/airflow
-      AIRFLOW__CORE__FERNET_KEY: ''
-      AIRFLOW__CORE__DAGS_ARE_PAUSED_AT_CREATION: 'true'
-      AIRFLOW__CORE__LOAD_EXAMPLES: 'false'
-      _AIRFLOW_DB_UPGRADE: 'true'
-      _AIRFLOW_WWW_USER_CREATE: 'true'
-      _AIRFLOW_WWW_USER_USERNAME: admin
-      _AIRFLOW_WWW_USER_PASSWORD: admin
-    depends_on:
-      airflow-postgres:
-        condition: service_healthy
-    networks:
-      - demo-network
-    entrypoint: /bin/bash
-    command:
-      - -c
-      - |
-        airflow db init
-        airflow db upgrade
-        airflow users create \
-          --username admin \
-          --firstname Admin \
-          --lastname User \
-          --role Admin \
-          --email admin@example.com \
-          --password admin
-
-  airflow-webserver:
-    image: apache/airflow:2.8.0-python3.11
-    container_name: demo-airflow-webserver
-    environment:
-      AIRFLOW__CORE__EXECUTOR: LocalExecutor
-      AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://airflow:airflow@airflow-postgres/airflow
-      AIRFLOW__CORE__FERNET_KEY: ''
-      AIRFLOW__CORE__DAGS_ARE_PAUSED_AT_CREATION: 'true'
-      AIRFLOW__CORE__LOAD_EXAMPLES: 'false'
-      AIRFLOW__API__AUTH_BACKENDS: 'airflow.api.auth.backend.basic_auth'
-    ports:
-      - "8082:8080"
-    volumes:
-      - ../python-services/airflow/dags:/opt/airflow/dags
-      - airflow_logs:/opt/airflow/logs
-      - airflow_plugins:/opt/airflow/plugins
-    depends_on:
-      airflow-init:
-        condition: service_completed_successfully
-      airflow-postgres:
-        condition: service_healthy
-    healthcheck:
-      test: ["CMD", "curl", "--fail", "http://localhost:8080/health"]
-      interval: 30s
-      timeout: 10s
-      retries: 5
-    networks:
-      - demo-network
-    restart: unless-stopped
-    command: webserver
-
-  airflow-scheduler:
-    image: apache/airflow:2.8.0-python3.11
-    container_name: demo-airflow-scheduler
-    environment:
-      AIRFLOW__CORE__EXECUTOR: LocalExecutor
-      AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://airflow:airflow@airflow-postgres/airflow
-      AIRFLOW__CORE__FERNET_KEY: ''
-      AIRFLOW__CORE__DAGS_ARE_PAUSED_AT_CREATION: 'true'
-      AIRFLOW__CORE__LOAD_EXAMPLES: 'false'
-    volumes:
-      - ../python-services/airflow/dags:/opt/airflow/dags
-      - airflow_logs:/opt/airflow/logs
-      - airflow_plugins:/opt/airflow/plugins
-    depends_on:
-      airflow-init:
-        condition: service_completed_successfully
-      airflow-postgres:
-        condition: service_healthy
-    networks:
-      - demo-network
-    restart: unless-stopped
-    command: scheduler
-
-  # ========== 前端服务 ==========
+  # React 前端服务
   frontend:
     build:
       context: ../frontend
@@ -281,67 +92,10 @@ services:
       - demo-network
     restart: unless-stopped
 
-  # ========== 监控服务 ==========
-  prometheus:
-    image: prom/prometheus:latest
-    container_name: demo-prometheus
-    ports:
-      - "9090:9090"
-    volumes:
-      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml
-      - prometheus_data:/prometheus
-    command:
-      - '--config.file=/etc/prometheus/prometheus.yml'
-      - '--storage.tsdb.path=/prometheus'
-    networks:
-      - demo-network
-    restart: unless-stopped
-
-  grafana:
-    image: grafana/grafana:latest
-    container_name: demo-grafana
-    ports:
-      - "3001:3000"
-    environment:
-      GF_SECURITY_ADMIN_USER: admin
-      GF_SECURITY_ADMIN_PASSWORD: admin
-      GF_INSTALL_PLUGINS: grafana-clock-panel
-    volumes:
-      - grafana_data:/var/lib/grafana
-      - ./monitoring/grafana/dashboards:/etc/grafana/provisioning/dashboards
-      - ./monitoring/grafana/datasources:/etc/grafana/provisioning/datasources
-    depends_on:
-      - prometheus
-    networks:
-      - demo-network
-    restart: unless-stopped
-
-  # ========== API 文档 ==========
-  swagger-ui:
-    image: swaggerapi/swagger-ui:latest
-    container_name: demo-swagger-ui
-    ports:
-      - "8083:8080"
-    environment:
-      SWAGGER_JSON_URL: http://backend:8080/v3/api-docs
-    depends_on:
-      - backend
-    networks:
-      - demo-network
-
 networks:
   demo-network:
     driver: bridge
 
 volumes:
   postgres_data:
-  redis_data:
-  weaviate_data:
   chroma_data:
-  chroma_local:
-  ml_models:
-  airflow_postgres_data:
-  airflow_logs:
-  airflow_plugins:
-  prometheus_data:
-  grafana_data:

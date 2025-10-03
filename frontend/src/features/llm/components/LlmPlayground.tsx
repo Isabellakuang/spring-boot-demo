@@ -123,7 +123,7 @@ export const LlmPlayground: React.FC = () => {
             {generateData.usage && (
               <div className="mt-4 text-sm text-gray-600">
                 <p>Tokens used: {generateData.usage.totalTokens || 
-                  (generateData.usage.inputTokens + generateData.usage.outputTokens)}</p>
+                  ((generateData.usage.inputTokens || 0) + (generateData.usage.outputTokens || 0))}</p>
                 <p>Model: {generateData.model}</p>
               </div>
             )}

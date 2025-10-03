@@ -30,6 +30,9 @@ public class Conversation {
     private Long id;
 
     @Column(nullable = false)
+    private String title;
+
+    @Column(nullable = false)
     private String subject;
 
     @Column(name = "customer_email", nullable = false)
@@ -49,7 +52,8 @@ public class Conversation {
     public Conversation() {
     }
 
-    public Conversation(String subject, String customerEmail, LocalDateTime startedAt, ConversationStatus status) {
+    public Conversation(String title, String subject, String customerEmail, LocalDateTime startedAt, ConversationStatus status) {
+        this.title = title;
         this.subject = subject;
         this.customerEmail = customerEmail;
         this.startedAt = startedAt;
@@ -63,6 +67,14 @@ public class Conversation {
 
     public Long getId() {
         return id;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
     }
 
     public String getSubject() {

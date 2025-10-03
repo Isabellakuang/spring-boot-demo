@@ -1,80 +1,47 @@
 from typing import List, Dict, Any, Optional
-import pinecone
-import weaviate
 import chromadb
 from chromadb.config import Settings
-import numpy as np
-from openai import OpenAI
+from sentence_transformers import SentenceTransformer
+import logging
+import os
+
+logger = logging.getLogger(__name__)
 
 class VectorStoreManager:
-    """统一的向量数据库管理"""
+    """简化版向量数据库管理 - 仅使用 ChromaDB（免费本地方案）"""
     
-    def __init__(self, provider: str = "pinecone"):
-        self.provider = provider
-        self.openai_client = OpenAI()
+    def __init__(self, provider: str = "chroma"):
+        self.provider = "chroma"  # 强制使用 ChromaDB
+        logger.info("Vector Store initialized with ChromaDB (FREE, no API keys required)")
         
-        if provider == "pinecone":
-            self._init_pinecone()
-        elif provider == "weaviate":
-            self._init_weaviate()
-        elif provider == "chroma":
-            self._init_chroma()
-    
-    def _init_pinecone(self):
-        """初始化 Pinecone"""
-        pinecone.init(
-            api_key=os.getenv("PINECONE_API_KEY"),
-            environment=os.getenv("PINECONE_ENV")
-        )
-        self.index_name = "knowledge-base"
-        if self.index_name not in pinecone.list_indexes():
-            pinecone.create_index(
-                name=self.index_name,
-                dimension=1536,  # OpenAI embedding dimension
-                metric="cosine"
-            )
-        self.index = pinecone.Index(self.index_name)
-    
-    def _init_weaviate(self):
-        """初始化 Weaviate"""
-        self.client = weaviate.Client(
-            url=os.getenv("WEAVIATE_URL", "http://localhost:8080"),
-            auth_client_secret=weaviate.AuthApiKey(
-                api_key=os.getenv("WEAVIATE_API_KEY")
-            )
-        )
+        # 使用免费的本地嵌入模型
+        self.embedding_model = SentenceTransformer('all-MiniLM-L6-v2')
+        logger.info("Using free local embedding model: all-MiniLM-L6-v2")
         
-        # 创建 Schema
-        schema = {
-            "class": "KnowledgeBase",
-            "vectorizer": "none",
-            "properties": [
-                {"name": "content", "dataType": ["text"]},
-                {"name": "metadata", "dataType": ["text"]},
-                {"name": "source", "dataType": ["string"]},
-            ]
-        }
-        
-        if not self.client.schema.exists("KnowledgeBase"):
-            self.client.schema.create_class(schema)
+        self._init_chroma()
     
     def _init_chroma(self):
-        """初始化 ChromaDB (本地开发用)"""
+        """初始化 ChromaDB (完全免费的本地向量数据库)"""
+        persist_dir = os.getenv("CHROMA_PERSIST_DIR", "./chroma_db")
+        
         self.client = chromadb.Client(Settings(
             chroma_db_impl="duckdb+parquet",
-            persist_directory="./chroma_db"
+            persist_directory=persist_dir
         ))
+        
         self.collection = self.client.get_or_create_collection(
-            name="knowledge_base"
+            name="knowledge_base",
+            metadata={"description": "Free local knowledge base for demo"}
         )
+        logger.info(f"ChromaDB collection initialized at {persist_dir}")
     
     def get_embedding(self, text: str) -> List[float]:
-        """获取文本嵌入向量"""
-        response = self.openai_client.embeddings.create(
-            model="text-embedding-3-small",
-            input=text
-        )
-        return response.data[0].embedding
+        """
+        获取文本嵌入向量
+        使用免费的本地模型 sentence-transformers
+        """
+        embedding = self.embedding_model.encode(text)
+        return embedding.tolist()
     
     async def upsert(
         self, 
@@ -82,31 +49,21 @@ class VectorStoreManager:
         text: str, 
         metadata: Dict[str, Any]
     ):
-        """插入或更新向量"""
-        embedding = self.get_embedding(text)
-        
-        if self.provider == "pinecone":
-            self.index.upsert([(id, embedding, metadata)])
-        
-        elif self.provider == "weaviate":
-            self.client.data_object.create(
-                data_object={
-                    "content": text,
-                    "metadata": str(metadata),
-                    "source": metadata.get("source", "unknown")
-                },
-                class_name="KnowledgeBase",
-                vector=embedding,
-                uuid=id
-            )
-        
-        elif self.provider == "chroma":
+        """插入或更新向量到 ChromaDB"""
+        try:
+            embedding = self.get_embedding(text)
+            
             self.collection.upsert(
                 ids=[id],
                 embeddings=[embedding],
                 documents=[text],
                 metadatas=[metadata]
             )
+            logger.info(f"Document upserted: {id}")
+            return {"success": True, "id": id}
+        except Exception as e:
+            logger.error(f"Upsert error: {str(e)}")
+            return {"success": False, "error": str(e)}
     
     async def search(
         self, 
@@ -114,46 +71,60 @@ class VectorStoreManager:
         top_k: int = 5,
         filter: Optional[Dict] = None
     ) -> List[Dict[str, Any]]:
-        """语义搜索"""
-        query_embedding = self.get_embedding(query)
-        
-        if self.provider == "pinecone":
-            results = self.index.query(
-                vector=query_embedding,
-                top_k=top_k,
-                include_metadata=True,
-                filter=filter
-            )
-            return [
-                {
-                    "id": match.id,
-                    "score": match.score,
-                    "metadata": match.metadata
-                }
-                for match in results.matches
-            ]
-        
-        elif self.provider == "weaviate":
-            results = (
-                self.client.query
-                .get("KnowledgeBase", ["content", "metadata", "source"])
-                .with_near_vector({"vector": query_embedding})
-                .with_limit(top_k)
-                .do()
-            )
-            return results["data"]["Get"]["KnowledgeBase"]
-        
-        elif self.provider == "chroma":
+        """
+        语义搜索
+        使用本地嵌入模型进行向量相似度搜索
+        """
+        try:
+            query_embedding = self.get_embedding(query)
+            
             results = self.collection.query(
                 query_embeddings=[query_embedding],
-                n_results=top_k
+                n_results=top_k,
+                where=filter
             )
-            return [
-                {
-                    "id": results["ids"][0][i],
-                    "document": results["documents"][0][i],
-                    "metadata": results["metadatas"][0][i],
-                    "distance": results["distances"][0][i]
-                }
-                for i in range(len(results["ids"][0]))
-            ]
+            
+            # 格式化结果
+            formatted_results = []
+            if results and results["ids"] and len(results["ids"][0]) > 0:
+                for i in range(len(results["ids"][0])):
+                    formatted_results.append({
+                        "id": results["ids"][0][i],
+                        "document": results["documents"][0][i],
+                        "metadata": results["metadatas"][0][i] if results["metadatas"] else {},
+                        "distance": results["distances"][0][i] if results["distances"] else 0,
+                        "score": 1 - results["distances"][0][i] if results["distances"] else 1.0
+                    })
+            
+            logger.info(f"Search completed: {len(formatted_results)} results found")
+            return formatted_results
+            
+        except Exception as e:
+            logger.error(f"Search error: {str(e)}")
+            return []
+    
+    async def delete(self, id: str):
+        """删除文档"""
+        try:
+            self.collection.delete(ids=[id])
+            logger.info(f"Document deleted: {id}")
+            return {"success": True, "id": id}
+        except Exception as e:
+            logger.error(f"Delete error: {str(e)}")
+            return {"success": False, "error": str(e)}
+    
+    async def get_stats(self) -> Dict[str, Any]:
+        """获取向量数据库统计信息"""
+        try:
+            count = self.collection.count()
+            return {
+                "provider": "ChromaDB (Free Local)",
+                "collection_name": "knowledge_base",
+                "document_count": count,
+                "embedding_model": "all-MiniLM-L6-v2",
+                "embedding_dimension": 384,
+                "note": "Using free local embedding model - no API keys required"
+            }
+        except Exception as e:
+            logger.error(f"Stats error: {str(e)}")
+            return {"error": str(e)}

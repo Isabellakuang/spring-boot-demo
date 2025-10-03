@@ -4,4 +4,3 @@ metadata:
   name: spring-boot-demo
   labels:
     name: spring-boot-demo
-    environment: production

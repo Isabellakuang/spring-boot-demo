@@ -37,6 +37,7 @@ public class ConversationService {
     public CreateConversationResponse createConversation(CreateConversationRequest request) {
         Conversation conversation = new Conversation(
             request.getSubject(),
+            request.getSubject(),
             request.getCustomerEmail(),
             LocalDateTime.now(),
             ConversationStatus.OPEN
@@ -90,6 +91,10 @@ public class ConversationService {
                 conversation.addMessage(botReply);
                 conversationMessageRepository.save(botReply);
             });
+    }
+
+    public List<Conversation> findAll() {
+        return conversationRepository.findAll();
     }
 
     private ConversationView toView(Conversation conversation) {

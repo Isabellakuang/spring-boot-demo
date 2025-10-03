@@ -8,7 +8,7 @@ spec:
     - ReadWriteOnce
   resources:
     requests:
-      storage: 10Gi
+      storage: 1Gi
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -27,41 +27,35 @@ spec:
     spec:
       containers:
       - name: postgres
+        # Using your configured Docker registry mirror
+        # If you need to use a specific mirror, change to: registry.cn-hangzhou.aliyuncs.com/library/postgres:15-alpine
         image: postgres:15-alpine
         ports:
         - containerPort: 5432
         env:
         - name: POSTGRES_DB
-          value: "demo_db"
+          value: demo_db
         - name: POSTGRES_USER
-          valueFrom:
-            secretKeyRef:
-              name: app-secrets
-              key: SPRING_DATASOURCE_USERNAME
+          value: demo_user
         - name: POSTGRES_PASSWORD
-          valueFrom:
-            secretKeyRef:
-              name: app-secrets
-              key: POSTGRES_PASSWORD
+          value: demo_pass
         volumeMounts:
         - name: postgres-storage
           mountPath: /var/lib/postgresql/data
-        resources:
-          requests:
-            memory: "512Mi"
-            cpu: "250m"
-          limits:
-            memory: "1Gi"
-            cpu: "500m"
+        - name: init-scripts
+          mountPath: /docker-entrypoint-initdb.d
       volumes:
       - name: postgres-storage
         persistentVolumeClaim:
           claimName: postgres-pvc
+      - name: init-scripts
+        configMap:
+          name: postgres-init-scripts
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: postgres-service
+  name: postgres
   namespace: spring-boot-demo
 spec:
   selector:

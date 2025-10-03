@@ -2,6 +2,8 @@ import { Route, Routes } from 'react-router-dom';
 import Layout from '../shared/components/Layout';
 import KnowledgePage from '../features/knowledge/pages/KnowledgePage';
 import ConversationPage from '../features/conversations/pages/ConversationPage';
+import { RagPage } from '../features/rag/pages/RagPage';
+import { LlmPlayground } from '../features/llm/components/LlmPlayground';
 
 export function AppRoutes() {
   return (
@@ -18,6 +20,8 @@ export function AppRoutes() {
         />
         <Route path="/knowledge" element={<KnowledgePage />} />
         <Route path="/conversations" element={<ConversationPage />} />
+        <Route path="/rag" element={<RagPage />} />
+        <Route path="/llm" element={<LlmPlayground />} />
       </Route>
     </Routes>
   );

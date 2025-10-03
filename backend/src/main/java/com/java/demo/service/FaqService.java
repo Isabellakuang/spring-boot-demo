@@ -65,6 +65,24 @@ public class FaqService {
         return CompletableFuture.completedFuture(cached.size());
     }
 
+    public List<FaqEntry> findAll() {
+        return faqRepository.findAll();
+    }
+
+    public List<FaqDto> searchByKeyword(String keyword) {
+        if (keyword == null || keyword.isBlank()) {
+            return List.of();
+        }
+        
+        String trimmed = keyword.toLowerCase(Locale.ROOT).strip();
+        final double threshold = 1.0;
+        
+        return getAllFaqs()
+            .stream()
+            .filter(faq -> TextSimilarity.score(trimmed, faq) >= threshold)
+            .toList();
+    }
+
     private FaqDto toDto(FaqEntry entry) {
         return new FaqDto(entry.getId(), entry.getQuestion(), entry.getAnswer(), entry.getTags());
     }

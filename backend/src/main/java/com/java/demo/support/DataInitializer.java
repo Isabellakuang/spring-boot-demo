@@ -56,6 +56,7 @@ public class DataInitializer {
 
         if (conversationRepository.count() == 0) {
             Conversation conversation = new Conversation(
+                "Flight Change Request",
                 "Flight change inquiry",
                 "customer@example.com",
                 LocalDateTime.now().minusDays(1),

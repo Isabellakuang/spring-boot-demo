@@ -1,4 +1,10 @@
-// LlmConfig.java
+package com.java.demo.config;
+
+import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.context.annotation.Configuration;
+import lombok.Data;
+
+@Data
 @Configuration
 @ConfigurationProperties(prefix = "demo.llm")
 public class LlmConfig {
@@ -7,6 +13,5 @@ public class LlmConfig {
     private String pineconeApiKey;
     private String pineconeEnvironment;
     private String pineconeIndex;
-
-    // getters/setters
+    private String mlServiceUrl = "http://localhost:8000";
 }

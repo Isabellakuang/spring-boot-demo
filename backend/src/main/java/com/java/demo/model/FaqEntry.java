@@ -28,6 +28,9 @@ public class FaqEntry {
     @Column(nullable = false, length = 3000)
     private String answer;
 
+    @Column
+    private String category;
+
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name = "faq_tags", joinColumns = @JoinColumn(name = "faq_id"))
     @Column(name = "tag")
@@ -68,6 +71,14 @@ public class FaqEntry {
 
     public void setTags(Set<String> tags) {
         this.tags = tags;
+    }
+
+    public String getCategory() {
+        return category;
+    }
+
+    public void setCategory(String category) {
+        this.category = category;
     }
 
     @Override

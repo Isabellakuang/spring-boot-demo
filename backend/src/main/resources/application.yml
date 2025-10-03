@@ -1,39 +1,81 @@
+# Spring Boot Demo - Simplified Configuration
+# 用于展示 NLP 和 RAG Flow 的简化配置
+
 spring:
   application:
     name: spring-boot-demo
+  
+  # 数据库配置
   datasource:
-    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/spring-boot}
-    username: ${SPRING_DATASOURCE_USERNAME:spring-boot}
-    password: ${SPRING_DATASOURCE_PASSWORD:spring-boot}
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/demo_db}
+    username: ${SPRING_DATASOURCE_USERNAME:demo_user}
+    password: ${SPRING_DATASOURCE_PASSWORD:demo_pass}
     driver-class-name: org.postgresql.Driver
+    hikari:
+      maximum-pool-size: 5
+      minimum-idle: 2
+  
   jpa:
     hibernate:
       ddl-auto: update
+    show-sql: false
     properties:
       hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
         format_sql: true
     open-in-view: false
-  data:
-    redis:
-      host: ${SPRING_DATA_REDIS_HOST:localhost}
-      port: ${SPRING_DATA_REDIS_PORT:6379}
+  
+  # 使用简单缓存（内存）
   cache:
-    type: redis
+    type: simple
+  
   jackson:
     serialization:
       WRITE_DATES_AS_TIMESTAMPS: false
 
-management:
-  endpoints:
-    web:
-      exposure:
-        include: health,info,metrics,httpexchanges,prometheus
-  endpoint:
-    health:
-      probes:
-        enabled: true
+# 服务器配置
+server:
+  port: 8080
 
+# 日志配置
 logging:
   level:
     com.java.demo: INFO
     org.springframework.web: INFO
+
+# FAQ 配置
+demo:
+  faq:
+    categories:
+      - name: "Spring Boot"
+        description: "Spring Boot framework questions"
+      - name: "Microservices"
+        description: "Microservices architecture questions"
+      - name: "Java"
+        description: "Java programming questions"
+      - name: "Database"
+        description: "Database related questions"
+  
+  # LLM 配置（使用简化的规则引擎）
+  llm:
+    ml-service-url: ${ML_SERVICE_URL:http://localhost:8001}
+    openai-api-key: ${OPENAI_API_KEY:}
+    openai-model: gpt-4o-mini
+
+# Actuator 配置
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics
+  endpoint:
+    health:
+      show-details: when-authorized
+
+# Swagger/OpenAPI 配置
+springdoc:
+  api-docs:
+    path: /api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+    enabled: true

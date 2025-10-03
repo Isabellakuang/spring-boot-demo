@@ -4,7 +4,7 @@ metadata:
   name: ml-service
   namespace: spring-boot-demo
 spec:
-  replicas: 2
+  replicas: 1
   selector:
     matchLabels:
       app: ml-service
@@ -15,50 +15,20 @@ spec:
     spec:
       containers:
       - name: ml-service
-        image: your-registry/demo-ml-service:latest
-        imagePullPolicy: Always
+        image: ml-service:latest
+        imagePullPolicy: Never
         ports:
         - containerPort: 8001
         env:
-        - name: OPENAI_API_KEY
-          valueFrom:
-            secretKeyRef:
-              name: app-secrets
-              key: OPENAI_API_KEY
-        - name: ANTHROPIC_API_KEY
-          valueFrom:
-            secretKeyRef:
-              name: app-secrets
-              key: ANTHROPIC_API_KEY
-        - name: VECTOR_DB_PROVIDER
-          valueFrom:
-            configMapKeyRef:
-              name: app-config
-              key: VECTOR_DB_PROVIDER
-        - name: WEAVIATE_URL
-          valueFrom:
-            configMapKeyRef:
-              name: app-config
-              key: WEAVIATE_URL
+        - name: PYTHONUNBUFFERED
+          value: "1"
         resources:
           requests:
+            memory: "512Mi"
+            cpu: "250m"
+          limits:
             memory: "1Gi"
             cpu: "500m"
-          limits:
-            memory: "2Gi"
-            cpu: "2000m"
-        livenessProbe:
-          httpGet:
-            path: /health
-            port: 8001
-          initialDelaySeconds: 30
-          periodSeconds: 10
-        readinessProbe:
-          httpGet:
-            path: /health
-            port: 8001
-          initialDelaySeconds: 10
-          periodSeconds: 5
 ---
 apiVersion: v1
 kind: Service

@@ -3,14 +3,12 @@ package com.java.demo.controller;
 import com.java.demo.dto.DocumentIndexRequest;
 import com.java.demo.dto.RagQueryRequest;
 import com.java.demo.dto.RagQueryResponse;
-import com.java.demo.service.RagService;
+import com.java.demo.service.SimplifiedRagService;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import jakarta.validation.Valid;
@@ -21,13 +19,11 @@ import java.util.Map;
 @RequiredArgsConstructor
 @Slf4j
 @Tag(name = "RAG", description = "检索增强生成 API")
-@SecurityRequirement(name = "bearer-jwt")
 public class RagController {
 
-    private final RagService ragService;
+    private final SimplifiedRagService ragService;
 
     @PostMapping("/index")
-    @PreAuthorize("hasRole('ADMIN')")
     @Operation(summary = "索引文档", description = "将文档索引到向量数据库")
     public ResponseEntity<Map<String, Object>> indexDocument(
             @Valid @RequestBody DocumentIndexRequest request) {
@@ -38,7 +34,6 @@ public class RagController {
     }
 
     @PostMapping("/query")
-    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
     @Operation(summary = "RAG 查询", description = "使用检索增强生成回答问题")
     public ResponseEntity<RagQueryResponse> query(@Valid @RequestBody RagQueryRequest request) {
         log.info("RAG query: {}", request.getQuestion());
@@ -48,7 +43,6 @@ public class RagController {
     }
 
     @PostMapping("/batch-index")
-    @PreAuthorize("hasRole('ADMIN')")
     @Operation(summary = "批量索引", description = "批量索引多个文档")
     public ResponseEntity<Map<String, Object>> batchIndex(
             @RequestBody java.util.List<DocumentIndexRequest> requests) {
@@ -59,7 +53,6 @@ public class RagController {
     }
 
     @DeleteMapping("/index/{docId}")
-    @PreAuthorize("hasRole('ADMIN')")
     @Operation(summary = "删除索引", description = "从向量数据库删除文档")
     public ResponseEntity<Map<String, Object>> deleteDocument(@PathVariable String docId) {
         log.info("Deleting document: {}", docId);
@@ -69,7 +62,6 @@ public class RagController {
     }
 
     @GetMapping("/stats")
-    @PreAuthorize("hasRole('ADMIN')")
     @Operation(summary = "获取 RAG 统计", description = "获取索引和查询统计信息")
     public ResponseEntity<Map<String, Object>> getStats() {
         Map<String, Object> stats = ragService.getStats();
@@ -77,7 +69,6 @@ public class RagController {
     }
 
     @PostMapping("/refresh-index")
-    @PreAuthorize("hasRole('ADMIN')")
     @Operation(summary = "刷新索引", description = "重新索引所有对话和 FAQ")
     public ResponseEntity<Map<String, Object>> refreshIndex() {
         log.info("Refreshing RAG index");
