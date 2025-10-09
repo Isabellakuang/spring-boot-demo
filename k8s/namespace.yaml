@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: scb-rag-demo
+  labels:
+    name: scb-rag-demo
+    environment: production

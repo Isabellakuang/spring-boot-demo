@@ -1,45 +1,59 @@
-# syntax=docker/dockerfile:1.6
-
-# 可通过构建参数覆盖镜像前缀，默认走 DaoCloud 公共镜像
-ARG REGISTRY_PREFIX=m.daocloud.io/docker.io/library
-
-# -------------------------------
-# Build stage
-# -------------------------------
-FROM ${REGISTRY_PREFIX}/node:20-alpine AS build
-ARG REGISTRY_PREFIX
+# 多阶段构建 - 构建阶段
+FROM node:20-alpine AS builder
 
 WORKDIR /app
 
-# 仅复制依赖清单文件，便于缓存
+# 复制 package.json 和 package-lock.json
 COPY package*.json ./
 
-# 安装依赖：优先使用 npm ci 保证可重复性，若无 lock 文件则回退到 npm install
-# 针对 Alpine/musl 环境，删除 package-lock.json 并重新安装以解决 Rollup 可选依赖问题
-RUN npm cache clean --force && \
-    rm -f package-lock.json && \
-    npm install --force
+# 安装依赖
+RUN npm install
 
-# 复制剩余源码并构建
+# 复制源代码
 COPY . .
-RUN npm run build && rm -rf node_modules
 
-# -------------------------------
-# Production stage
-# -------------------------------
-ARG REGISTRY_PREFIX=m.daocloud.io/docker.io/library
-FROM ${REGISTRY_PREFIX}/nginx:alpine
-ARG REGISTRY_PREFIX
+# 构建生产版本
+RUN npm run build
 
-# 拷贝构建产物到 nginx 默认站点目录
-COPY --from=build /app/dist /usr/share/nginx/html
+# 运行阶段 - 使用 Nginx
+FROM nginx:1.25-alpine
 
-# 拷贝自定义 nginx 配置
-COPY nginx.conf /etc/nginx/conf.d/default.conf
+# 安装 gettext 包（提供 envsubst 命令）
+RUN apk add --no-cache gettext
 
-# 可选：设置健康检查，确保服务端点可用
-HEALTHCHECK --interval=30s --timeout=5s --retries=3 \
-    CMD wget -q -O- http://localhost/ || exit 1
+# 复制自定义 Nginx 配置模板
+COPY nginx.conf /etc/nginx/templates/default.conf.template
 
+# 从构建阶段复制构建产物
+COPY --from=builder /app/dist /usr/share/nginx/html
+
+# 更改所有权（nginx 用户已存在于基础镜像中）
+RUN chown -R nginx:nginx /usr/share/nginx/html && \
+    chown -R nginx:nginx /var/cache/nginx && \
+    chown -R nginx:nginx /var/log/nginx && \
+    chown -R nginx:nginx /etc/nginx/conf.d && \
+    touch /var/run/nginx.pid && \
+    chown -R nginx:nginx /var/run/nginx.pid
+
+# 创建启动脚本（需要在切换用户前创建并设置权限）
+RUN echo '#!/bin/sh' > /docker-entrypoint.sh && \
+    echo 'set -e' >> /docker-entrypoint.sh && \
+    echo 'echo "BACKEND_HOST is: ${BACKEND_HOST}"' >> /docker-entrypoint.sh && \
+    echo 'envsubst "\$BACKEND_HOST" < /etc/nginx/templates/default.conf.template > /etc/nginx/conf.d/default.conf' >> /docker-entrypoint.sh && \
+    echo 'echo "Generated nginx config:"' >> /docker-entrypoint.sh && \
+    echo 'cat /etc/nginx/conf.d/default.conf' >> /docker-entrypoint.sh && \
+    echo 'exec nginx -g "daemon off;"' >> /docker-entrypoint.sh && \
+    chmod +x /docker-entrypoint.sh
+
+# 切换到非 root 用户
+USER nginx
+
+# 暴露端口
 EXPOSE 80
-CMD ["nginx", "-g", "daemon off;"]
+
+# 健康检查
+HEALTHCHECK --interval=30s --timeout=3s --start-period=10s --retries=3 \
+    CMD wget --no-verbose --tries=1 --spider http://localhost:80/ || exit 1
+
+# 启动脚本
+CMD ["/docker-entrypoint.sh"]

@@ -1,20 +1,21 @@
-# Spring Boot Demo - Simplified Configuration
-# 用于展示 NLP 和 RAG Flow 的简化配置
-
 spring:
   application:
-    name: spring-boot-demo
+    name: scb-rag-demo
   
-  # 数据库配置
+  # Database configuration
   datasource:
-    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/demo_db}
-    username: ${SPRING_DATASOURCE_USERNAME:demo_user}
-    password: ${SPRING_DATASOURCE_PASSWORD:demo_pass}
+    url: jdbc:postgresql://${POSTGRES_HOST:localhost}:${POSTGRES_PORT:5432}/${POSTGRES_DB:scb_rag_demo}
+    username: ${POSTGRES_USER:postgres}
+    password: ${POSTGRES_PASSWORD:postgres123}
     driver-class-name: org.postgresql.Driver
     hikari:
-      maximum-pool-size: 5
-      minimum-idle: 2
+      maximum-pool-size: 10
+      minimum-idle: 5
+      connection-timeout: 30000
+      idle-timeout: 600000
+      max-lifetime: 1800000
   
+  # JPA configuration
   jpa:
     hibernate:
       ddl-auto: update
@@ -23,46 +24,57 @@ spring:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
         format_sql: true
+        use_sql_comments: true
     open-in-view: false
   
-  # 使用简单缓存（内存）
+  # Redis configuration
+  data:
+    redis:
+      host: ${REDIS_HOST:localhost}
+      port: ${REDIS_PORT:6379}
+      password: ${REDIS_PASSWORD:}
+      timeout: 6000ms
+      lettuce:
+        pool:
+          max-active: 8
+          max-idle: 8
+          min-idle: 0
+          max-wait: -1ms
+  
+  # Cache configuration
   cache:
-    type: simple
+    type: redis
+    redis:
+      time-to-live: 3600000  # 1 hour
+      cache-null-values: false
   
+  # File upload configuration
+  servlet:
+    multipart:
+      enabled: true
+      max-file-size: ${MAX_FILE_SIZE:10MB}
+      max-request-size: ${MAX_FILE_SIZE:10MB}
+      file-size-threshold: 2KB
+  
+  # Jackson configuration
   jackson:
+    time-zone: Asia/Shanghai
+    date-format: yyyy-MM-dd HH:mm:ss
     serialization:
-      WRITE_DATES_AS_TIMESTAMPS: false
+      write-dates-as-timestamps: false
+    default-property-inclusion: non_null
 
-# 服务器配置
+# Server configuration
 server:
-  port: 8080
+  port: ${BACKEND_PORT:8080}
+  compression:
+    enabled: true
+    mime-types: application/json,application/xml,text/html,text/xml,text/plain
+  error:
+    include-message: always
+    include-binding-errors: always
 
-# 日志配置
-logging:
-  level:
-    com.java.demo: INFO
-    org.springframework.web: INFO
-
-# FAQ 配置
-demo:
-  faq:
-    categories:
-      - name: "Spring Boot"
-        description: "Spring Boot framework questions"
-      - name: "Microservices"
-        description: "Microservices architecture questions"
-      - name: "Java"
-        description: "Java programming questions"
-      - name: "Database"
-        description: "Database related questions"
-  
-  # LLM 配置（使用简化的规则引擎）
-  llm:
-    ml-service-url: ${ML_SERVICE_URL:http://localhost:8001}
-    openai-api-key: ${OPENAI_API_KEY:}
-    openai-model: gpt-4o-mini
-
-# Actuator 配置
+# Actuator configuration
 management:
   endpoints:
     web:
@@ -71,11 +83,64 @@ management:
   endpoint:
     health:
       show-details: when-authorized
+  metrics:
+    export:
+      prometheus:
+        enabled: true
 
-# Swagger/OpenAPI 配置
+# Springdoc configuration
 springdoc:
   api-docs:
     path: /api-docs
   swagger-ui:
     path: /swagger-ui.html
-    enabled: true
+    tags-sorter: alpha
+    operations-sorter: alpha
+  show-actuator: true
+
+# Application custom configuration
+app:
+  # Poe API configuration (OpenAI compatible format)
+  poe:
+    api-key: ${POE_API_KEY}
+    base-url: https://api.poe.com/v1
+    model: ${POE_MODEL:Claude-3.5-Sonnet}
+    timeout: 30000
+    max-tokens: 4000
+    temperature: 0.7
+    max-retries: 3
+  
+  # RAG configuration
+  rag:
+    chunk-size: ${CHUNK_SIZE:500}
+    chunk-overlap: ${CHUNK_OVERLAP:50}
+    max-chunks-per-query: ${MAX_CHUNKS_PER_QUERY:5}
+    similarity-threshold: 0.3
+  
+  # File storage configuration
+  storage:
+    upload-dir: ${UPLOAD_DIR:./uploads}
+    allowed-types: ${ALLOWED_FILE_TYPES:pdf}
+    max-file-size: ${MAX_FILE_SIZE:10485760}  # 10MB in bytes
+  
+  # Router configuration
+  router:
+    keywords:
+      rag: document,policy,manual,guide,regulation,clause,instruction
+      nlp: what is,how,why,explain,define
+
+# Logging configuration
+logging:
+  level:
+    root: ${LOG_LEVEL:INFO}
+    com.scb.ragdemo: DEBUG
+    org.springframework.web: INFO
+    org.hibernate.SQL: DEBUG
+    org.hibernate.type.descriptor.sql.BasicBinder: TRACE
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} - %msg%n"
+    file: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
+  file:
+    name: logs/scb-rag-demo.log
+    max-size: 10MB
+    max-history: 30
